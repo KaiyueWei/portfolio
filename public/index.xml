@@ -6,12 +6,12 @@
     <description>Recent content on Kaiyue Wei</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 30 Nov 2025 10:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 30 Nov 2025 00:00:00 -0700</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>CyberSCI CTF Write-up: Water Treatment (Part 1)</title>
       <link>http://localhost:1313/posts/cybersci-ctf-writeup/</link>
-      <pubDate>Sun, 30 Nov 2025 10:00:00 +0000</pubDate>
+      <pubDate>Sun, 30 Nov 2025 00:00:00 -0700</pubDate>
       <guid>http://localhost:1313/posts/cybersci-ctf-writeup/</guid>
       <description>Reverse engineering a legacy 16-bit DOS executable to bypass a custom implementation of the MD2 hash algorithm.</description>
     </item>
@@ -22,6 +22,21 @@
       <guid>http://localhost:1313/projects/project1/</guid>
       <description>&lt;p&gt;#Project1&lt;/p&gt;
 &lt;p&gt;This is project1.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>About Me</title>
+      <link>http://localhost:1313/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/about/</guid>
+      <description>&lt;p&gt;Hi, I&amp;rsquo;m &lt;strong&gt;Kaiyue Wei&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;I am a Master&amp;rsquo;s student passionate about &lt;strong&gt;Systems Programming&lt;/strong&gt;, &lt;strong&gt;Operating Systems&lt;/strong&gt;, and &lt;strong&gt;Security&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;I enjoy diving deep into low-level code, reverse engineering legacy executables (as you might have seen in my CTF write-ups!), and building efficient software.&lt;/p&gt;
+&lt;h3 id=&#34;connect-with-me&#34;&gt;Connect with me&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;GitHub&lt;/strong&gt;: &lt;a href=&#34;https://github.com/KaiyueWei&#34;&gt;KaiyueWei&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;LinkedIn&lt;/strong&gt;: &lt;a href=&#34;https://linkedin.com/in/kaiyue-wei-03600532a&#34;&gt;Kaiyue Wei&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Email&lt;/strong&gt;: &lt;a href=&#34;mailto:kaiyue.wei@outlook.com&#34;&gt;kaiyue.wei@outlook.com&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
     </item>
   </channel>
 </rss>

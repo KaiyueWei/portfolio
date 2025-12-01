@@ -15,40 +15,5 @@
       <guid>http://localhost:1313/tags/unix/</guid>
       <description></description>
     </item>
-    <item>
-      <title>Assembly</title>
-      <link>http://localhost:1313/tags/assembly/</link>
-      <pubDate>Fri, 27 Oct 2023 10:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/tags/assembly/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Crypto</title>
-      <link>http://localhost:1313/tags/crypto/</link>
-      <pubDate>Fri, 27 Oct 2023 10:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/tags/crypto/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>DOS</title>
-      <link>http://localhost:1313/tags/dos/</link>
-      <pubDate>Fri, 27 Oct 2023 10:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/tags/dos/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Ghidra</title>
-      <link>http://localhost:1313/tags/ghidra/</link>
-      <pubDate>Fri, 27 Oct 2023 10:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/tags/ghidra/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Python</title>
-      <link>http://localhost:1313/tags/python/</link>
-      <pubDate>Fri, 27 Oct 2023 10:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/tags/python/</guid>
-      <description></description>
-    </item>
   </channel>
 </rss>

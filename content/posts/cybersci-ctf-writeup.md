@@ -1,6 +1,6 @@
 ---
 title: "CyberSCI CTF Write-up: Water Treatment (Part 1)"
-date: '2025-11-30T21:55:38-07:00'
+date: '2025-11-30T00:00:00-07:00'
 draft: false
 categories: ["CTF", "Reverse Engineering"]
 tags: ["Ghidra", "Python", "Crypto", "DOS", "Assembly"]
