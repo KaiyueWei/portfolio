@@ -1,4 +1,13 @@
-<!doctype html><html lang=en dir=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Vim Practice001 | Kaiyue Wei</title><meta name=keywords content><meta name=description content="Macro
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Vim Practice001 | Kaiyue Wei</title>
+<meta name="keywords" content="">
+<meta name="description" content="Macro
 
 q{character} to start recording a macro in register {character}
 q to stop recording
@@ -12,68 +21,287 @@ record the macro, with @{character} to invoke the macro recursively (will be a n
 Practice 1 Convert xml to json
 Step0
 curl -O https://missing.csail.mit.edu/2020/files/example-data.xml
-<person>
+&lt;person&gt;
 
-	<name>Johnny Zhang Jr.</name>
+	&lt;name&gt;Johnny Zhang Jr.&lt;/name&gt;
 
-	<email>amyalvarez@cole.com</email>
+	&lt;email&gt;amyalvarez@cole.com&lt;/email&gt;
 
-</person>
-"><meta name=author content><link rel=canonical href=https://kaiyuewei.me/posts/practice001/><link crossorigin=anonymous href=/assets/css/stylesheet.8fe10233a706bc87f2e08b3cf97b8bd4c0a80f10675a143675d59212121037c0.css integrity="sha256-j+ECM6cGvIfy4Is8+XuL1MCoDxBnWhQ2ddWSEhIQN8A=" rel="preload stylesheet" as=style><link rel=icon href=https://kaiyuewei.me/assets/favicon.png><link rel=icon type=image/png sizes=16x16 href=https://kaiyuewei.me/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://kaiyuewei.me/favicon-32x32.png><link rel=apple-touch-icon href=https://kaiyuewei.me/apple-touch-icon.png><link rel=mask-icon href=https://kaiyuewei.me/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=en href=https://kaiyuewei.me/posts/practice001/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><meta property="og:url" content="https://kaiyuewei.me/posts/practice001/"><meta property="og:site_name" content="Kaiyue Wei"><meta property="og:title" content="Vim Practice001"><meta property="og:description" content="Macro q{character} to start recording a macro in register {character} q to stop recording @{character} replays the macro Macro execution stops on error {number}@{character} executes a macro {number} times Macros can be recursive first clear the macro with q{character}q record the macro, with @{character} to invoke the macro recursively (will be a no-op until recording is complete) Practice 1 Convert xml to json Step0 curl -O https://missing.csail.mit.edu/2020/files/example-data.xml
-<person> <name>Johnny Zhang Jr.</name> <email>amyalvarez@cole.com</email> </person> "><meta property="og:locale" content="en-us"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2025-06-25T00:00:00+00:00"><meta property="article:modified_time" content="2025-06-25T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Vim Practice001"><meta name=twitter:description content="Macro
+&lt;/person&gt;
+">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/posts/practice001/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.8fe10233a706bc87f2e08b3cf97b8bd4c0a80f10675a143675d59212121037c0.css" integrity="sha256-j&#43;ECM6cGvIfy4Is8&#43;XuL1MCoDxBnWhQ2ddWSEhIQN8A=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/assets/favicon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/practice001/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
 
-q{character} to start recording a macro in register {character}
-q to stop recording
-@{character} replays the macro
-Macro execution stops on error
-{number}@{character} executes a macro {number} times
-Macros can be recursive
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Kaiyue Wei (Alt + H)">Kaiyue Wei</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/about/" title="about">
+                    <span>about</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="tags">
+                    <span>tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="search">
+                    <span>search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Vim Practice001
+    </h1>
+    <div class="post-meta"><span title='2025-06-25 00:00:00 +0000 UTC'>June 25, 2025</span>
+
+</div>
+  </header> 
+  <div class="post-content"><h1 id="macro">Macro<a hidden class="anchor" aria-hidden="true" href="#macro">#</a></h1>
+<ul>
+<li>q{character} to start recording a macro in register {character}</li>
+<li>q to stop recording</li>
+<li>@{character} replays the macro</li>
+<li>Macro execution stops on error</li>
+<li>{number}@{character} executes a macro {number} times</li>
+<li>Macros can be recursive
 first clear the macro with q{character}q
-record the macro, with @{character} to invoke the macro recursively (will be a no-op until recording is complete)
-
-Practice 1 Convert xml to json
-Step0
-curl -O https://missing.csail.mit.edu/2020/files/example-data.xml
-<person>
-
-	<name>Johnny Zhang Jr.</name>
-
-	<email>amyalvarez@cole.com</email>
-
-</person>
-"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://kaiyuewei.me/posts/"},{"@type":"ListItem","position":2,"name":"Vim Practice001","item":"https://kaiyuewei.me/posts/practice001/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Vim Practice001","name":"Vim Practice001","description":"Macro q{character} to start recording a macro in register {character} q to stop recording @{character} replays the macro Macro execution stops on error {number}@{character} executes a macro {number} times Macros can be recursive first clear the macro with q{character}q record the macro, with @{character} to invoke the macro recursively (will be a no-op until recording is complete) Practice 1 Convert xml to json Step0 curl -O https://missing.csail.mit.edu/2020/files/example-data.xml\n\u0026lt;person\u0026gt; \u0026lt;name\u0026gt;Johnny Zhang Jr.\u0026lt;/name\u0026gt; \u0026lt;email\u0026gt;amyalvarez@cole.com\u0026lt;/email\u0026gt; \u0026lt;/person\u0026gt; ","keywords":[],"articleBody":"Macro q{character} to start recording a macro in register {character} q to stop recording @{character} replays the macro Macro execution stops on error {number}@{character} executes a macro {number} times Macros can be recursive first clear the macro with q{character}q record the macro, with @{character} to invoke the macro recursively (will be a no-op until recording is complete) Practice 1 Convert xml to json Step0 curl -O https://missing.csail.mit.edu/2020/files/example-data.xml\nJohnny Zhang Jr. amyalvarez@cole.com Step1: Macro to format a single element (register e) go to line with \u003c\\name\u003eJohnny Zhang Jr.\nqe `start recording register macro e\n^ go to the first character of this line which is \u003c ==\u003c==name\u003eJohnny Zhang Jr.\nr\" replace \u003c with \" ==\"==name\u003eJohnny Zhang Jr.\nf\u003e `find next \u003e “name ==\u003e== Johnny Zhang Jr.\ns”: “ delete character \u003e and substitute with \": \" “name==”: “==Johnny Zhang Jr.\nf\u003c find next \u003c “name”: “Johnny Zhang Jr.==\u003c==/name\u003e\nC” change to the end of the line “name”: “Johnny Zhang Jr.==\"==\nq end the recording\nStep2: Macro to format a person (register p) go to line with Johnny Zhang Jr. amyalvarez@cole.com qp `start recording register macro p\nS{ delete line and substitute with { ==\u003c==person\u003e -\u003e {\nj exit to normal mode and go to next line Johnny Zhang Jr.\n@e `execute macro e “name”: “Johnny Zhang Jr.==\"==\nA, append , to the end of the line “name”: “Johnny Zhang Jr.\"==,==\nj@e `go to next line and execute macro e “email”: “amyalvarez@cole.com”\njS} go to the next line and delete the line and su situte with }, -\u003e },\nqexit to normal mode and end the recording\nStep3: Macro to format a person and go to next person (register q) qq `start recording register macro q\n@p `execute macro p\nj go to next person\nq end the recording\nStep4: Execute macros until end of the file 999@q\n","wordCount":"314","inLanguage":"en","datePublished":"2025-06-25T00:00:00Z","dateModified":"2025-06-25T00:00:00Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://kaiyuewei.me/posts/practice001/"},"publisher":{"@type":"Organization","name":"Kaiyue Wei","logo":{"@type":"ImageObject","url":"https://kaiyuewei.me/assets/favicon.png"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://kaiyuewei.me/ accesskey=h title="Kaiyue Wei (Alt + H)">Kaiyue Wei</a><div class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme">
-<svg id="moon" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-<svg id="sun" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu><li><a href=https://kaiyuewei.me/about/ title=about><span>about</span></a></li><li><a href=https://kaiyuewei.me/tags/ title=tags><span>tags</span></a></li><li><a href=https://kaiyuewei.me/search/ title=search><span>search</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><h1 class="post-title entry-hint-parent">Vim Practice001</h1><div class=post-meta><span title='2025-06-25 00:00:00 +0000 UTC'>June 25, 2025</span></div></header><div class=post-content><h1 id=macro>Macro<a hidden class=anchor aria-hidden=true href=#macro>#</a></h1><ul><li>q{character} to start recording a macro in register {character}</li><li>q to stop recording</li><li>@{character} replays the macro</li><li>Macro execution stops on error</li><li>{number}@{character} executes a macro {number} times</li><li>Macros can be recursive
-first clear the macro with q{character}q
-record the macro, with @{character} to invoke the macro recursively (will be a no-op until recording is complete)</li></ul><h1 id=practice-1-convert-xml-to-json>Practice 1 Convert xml to json<a hidden class=anchor aria-hidden=true href=#practice-1-convert-xml-to-json>#</a></h1><h2 id=step0>Step0<a hidden class=anchor aria-hidden=true href=#step0>#</a></h2><p>curl -O <a href=https://missing.csail.mit.edu/2020/files/example-data.xml>https://missing.csail.mit.edu/2020/files/example-data.xml</a></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=display:flex><span><span style=color:#f92672>&lt;person&gt;</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>	<span style=color:#f92672>&lt;name&gt;</span>Johnny Zhang Jr.<span style=color:#f92672>&lt;/name&gt;</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>	<span style=color:#f92672>&lt;email&gt;</span>amyalvarez@cole.com<span style=color:#f92672>&lt;/email&gt;</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;/person&gt;</span>
-</span></span></code></pre></div><p><img alt=step0 loading=lazy src=/portfolio/practice1_step0.gif></p><h2 id=step1-macro-to-format-a-single-element-registere>Step1: Macro to format a single element (register <code>e</code>)<a hidden class=anchor aria-hidden=true href=#step1-macro-to-format-a-single-element-registere>#</a></h2><p><code>go to line with &lt;name></code>
-&lt;\name>Johnny Zhang Jr.&lt;/name></p><p><strong>qe</strong> `start recording register macro e</p><p><strong>^</strong> <code>go to the first character of this line which is &lt;</code>
-==&lt;==name>Johnny Zhang Jr.&lt;/name></p><p><strong>r"</strong> <code>replace &lt; with "</code>
-=="==name>Johnny Zhang Jr.&lt;/name></p><p><strong>f></strong> `find next >
-&ldquo;name ==>== Johnny Zhang Jr.&lt;/name></p><p><strong>s&rdquo;: &ldquo;</strong> <code>delete character > and substitute with ": "</code>
-&ldquo;name==&rdquo;: &ldquo;==Johnny Zhang Jr.&lt;/name></p><p>f&lt; <code>find next &lt;</code>
-&ldquo;name&rdquo;: &ldquo;Johnny Zhang Jr.==&lt;==/name></p><p>C&rdquo; <code>change to the end of the line</code>
-&ldquo;name&rdquo;: &ldquo;Johnny Zhang Jr.=="==</p><p><strong>q</strong> <code>end the recording</code></p><p><img alt=step1 loading=lazy src=/portfolio/practice1_step1.gif></p><h2 id=step2-macro-to-format-a-person-register-p>Step2: Macro to format a person (register p)<a hidden class=anchor aria-hidden=true href=#step2-macro-to-format-a-person-register-p>#</a></h2><p><code>go to line with &lt;person></code></p><pre tabindex=0><code>&lt;person&gt;
+record the macro, with @{character} to invoke the macro recursively (will be a no-op until recording is complete)</li>
+</ul>
+<h1 id="practice-1-convert-xml-to-json">Practice 1 Convert xml to json<a hidden class="anchor" aria-hidden="true" href="#practice-1-convert-xml-to-json">#</a></h1>
+<h2 id="step0">Step0<a hidden class="anchor" aria-hidden="true" href="#step0">#</a></h2>
+<p>curl -O <a href="https://missing.csail.mit.edu/2020/files/example-data.xml">https://missing.csail.mit.edu/2020/files/example-data.xml</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#f92672">&lt;person&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">&lt;name&gt;</span>Johnny Zhang Jr.<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">&lt;email&gt;</span>amyalvarez@cole.com<span style="color:#f92672">&lt;/email&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/person&gt;</span>
+</span></span></code></pre></div><p><img alt="step0" loading="lazy" src="/portfolio/practice1_step0.gif"></p>
+<h2 id="step1-macro-to-format-a-single-element-registere">Step1: Macro to format a single element (register <code>e</code>)<a hidden class="anchor" aria-hidden="true" href="#step1-macro-to-format-a-single-element-registere">#</a></h2>
+<p><code>go to line with &lt;name&gt;</code>
+&lt;\name&gt;Johnny Zhang Jr.&lt;/name&gt;</p>
+<p><strong>qe</strong> `start recording register macro e</p>
+<p><strong>^</strong> <code>go to the first character of this line which is &lt;</code>
+==&lt;==name&gt;Johnny Zhang Jr.&lt;/name&gt;</p>
+<p><strong>r&quot;</strong> <code>replace &lt; with &quot;</code>
+==&quot;==name&gt;Johnny Zhang Jr.&lt;/name&gt;</p>
+<p><strong>f&gt;</strong> `find next &gt;
+&ldquo;name ==&gt;== Johnny Zhang Jr.&lt;/name&gt;</p>
+<p><strong>s&rdquo;: &ldquo;</strong> <code>delete character &gt; and substitute with &quot;: &quot;</code>
+&ldquo;name==&rdquo;:  &ldquo;==Johnny Zhang Jr.&lt;/name&gt;</p>
+<p>f&lt; <code>find next &lt;</code>
+&ldquo;name&rdquo;:  &ldquo;Johnny Zhang Jr.==&lt;==/name&gt;</p>
+<p>C&rdquo; <code>change to the end of the line</code>
+&ldquo;name&rdquo;:  &ldquo;Johnny Zhang Jr.==&quot;==</p>
+<p><strong>q</strong>  <code> end the recording</code></p>
+<p><img alt="step1" loading="lazy" src="/portfolio/practice1_step1.gif"></p>
+<h2 id="step2-macro-to-format-a-person-register-p">Step2: Macro to format a person (register p)<a hidden class="anchor" aria-hidden="true" href="#step2-macro-to-format-a-person-register-p">#</a></h2>
+<p><code>go to line with &lt;person&gt;</code></p>
+<pre tabindex="0"><code>&lt;person&gt;
 
 &lt;name&gt;Johnny Zhang Jr.&lt;/name&gt;
 
 &lt;email&gt;amyalvarez@cole.com&lt;/email&gt;
 
 &lt;/person&gt;
-</code></pre><p><strong>qp</strong> `start recording register macro p</p><p><strong>S{</strong> <code>delete line and substitute with {</code>
-==&lt;==person> -> {</p><p><strong>&lt;ESC>j</strong> <code>exit to normal mode and go to next line</code>
-&lt;name>Johnny Zhang Jr.&lt;name></p><p><strong>@e</strong> `execute macro e
-&ldquo;name&rdquo;: &ldquo;Johnny Zhang Jr.=="==</p><p><strong>A,</strong> <code>append , to the end of the line</code>
-&ldquo;name&rdquo;: &ldquo;Johnny Zhang Jr."==,==</p><p><strong>j@e</strong> `go to next line and execute macro e
-&ldquo;email&rdquo;: &ldquo;<a href=mailto:amyalvarez@cole.com>amyalvarez@cole.com</a>&rdquo;</p><p><strong>jS}</strong> <code>go to the next line and delete the line &lt;/person> and su situte with },</code>
-&lt;person> -> },</p><p><strong>&lt;ESC>q</strong><code>exit to normal mode and end the recording</code></p><p><img alt=step2 loading=lazy src=/portfolio/practice1_step2.gif></p><h2 id=step3-macro-to-format-a-person-and-go-to-next-person-register-q>Step3: Macro to format a person and go to next person (register q)<a hidden class=anchor aria-hidden=true href=#step3-macro-to-format-a-person-and-go-to-next-person-register-q>#</a></h2><p><strong>qq</strong> `start recording register macro q</p><p><strong>@p</strong> `execute macro p</p><p><strong>j</strong> <code>go to next person</code></p><p><strong>q</strong> <code>end the recording</code></p><p><img alt=step3 loading=lazy src=/portfolio/practice1_step3.gif></p><h2 id=step4-execute-macros-until-end-of-the-file>Step4: Execute macros until end of the file<a hidden class=anchor aria-hidden=true href=#step4-execute-macros-until-end-of-the-file>#</a></h2><p><strong>999@q</strong></p><p><img alt=step4 loading=lazy src=/portfolio/practice1_step4.gif></p></div><footer class=post-footer><ul class=post-tags></ul></footer></article></main><footer class=footer><span>&copy; 2025 <a href=https://kaiyuewei.me/>Kaiyue Wei</a></span> ·
-<span>Powered by
-<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
-<a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg viewBox="0 0 12 6" fill="currentColor"><path d="M12 6H0l6-6z"/></svg>
-</a><script>let menu=document.getElementById("menu");menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script></body></html>
+</code></pre><p><strong>qp</strong> `start recording register macro p</p>
+<p><strong>S{</strong>  <code>delete line and substitute with {</code>
+==&lt;==person&gt; -&gt; {</p>
+<p><strong>&lt;ESC&gt;j</strong> <code>exit to normal mode and go to next line</code>
+&lt;name&gt;Johnny Zhang Jr.&lt;name&gt;</p>
+<p><strong>@e</strong> `execute macro e
+&ldquo;name&rdquo;:  &ldquo;Johnny Zhang Jr.==&quot;==</p>
+<p><strong>A,</strong> <code>append , to the end of the line</code>
+&ldquo;name&rdquo;:  &ldquo;Johnny Zhang Jr.&quot;==,==</p>
+<p><strong>j@e</strong> `go to next line and execute macro e
+&ldquo;email&rdquo;: &ldquo;<a href="mailto:amyalvarez@cole.com">amyalvarez@cole.com</a>&rdquo;</p>
+<p><strong>jS}</strong> <code> go to the next line and delete the line &lt;/person&gt; and su situte with },</code>
+&lt;person&gt; -&gt; },</p>
+<p><strong>&lt;ESC&gt;q</strong><code>exit to normal mode and end the recording</code></p>
+<p><img alt="step2" loading="lazy" src="/portfolio/practice1_step2.gif"></p>
+<h2 id="step3-macro-to-format-a-person-and-go-to-next-person-register-q">Step3: Macro to format a person and go to next person (register q)<a hidden class="anchor" aria-hidden="true" href="#step3-macro-to-format-a-person-and-go-to-next-person-register-q">#</a></h2>
+<p><strong>qq</strong> `start recording register macro q</p>
+<p><strong>@p</strong> `execute macro p</p>
+<p><strong>j</strong> <code>go to next person</code></p>
+<p><strong>q</strong> <code>end the recording</code></p>
+<p><img alt="step3" loading="lazy" src="/portfolio/practice1_step3.gif"></p>
+<h2 id="step4-execute-macros-until-end-of-the-file">Step4: Execute macros until end of the file<a hidden class="anchor" aria-hidden="true" href="#step4-execute-macros-until-end-of-the-file">#</a></h2>
+<p><strong>999@q</strong></p>
+<p><img alt="step4" loading="lazy" src="/portfolio/practice1_step4.gif"></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">Kaiyue Wei</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>
