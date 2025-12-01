@@ -6,8 +6,15 @@
     <description>Recent content in Posts on Kaiyue Wei</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 25 Jun 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 30 Nov 2025 10:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>CyberSCI CTF Write-up: Water Treatment (Part 1)</title>
+      <link>http://localhost:1313/posts/cybersci-ctf-writeup/</link>
+      <pubDate>Sun, 30 Nov 2025 10:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/cybersci-ctf-writeup/</guid>
+      <description>Reverse engineering a legacy 16-bit DOS executable to bypass a custom implementation of the MD2 hash algorithm.</description>
+    </item>
     <item>
       <title>Vim Practice001</title>
       <link>http://localhost:1313/posts/practice001/</link>
@@ -35,13 +42,6 @@ record the macro, with @{character} to invoke the macro recursively (will be a n
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;/person&amp;gt;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img alt=&#34;step0&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/portfolio/practice1_step0.gif&#34;&gt;&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>CyberSCI CTF Write-up: Water Treatment (Part 1)</title>
-      <link>http://localhost:1313/posts/cybersci-ctf-writeup/</link>
-      <pubDate>Fri, 27 Oct 2023 10:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/cybersci-ctf-writeup/</guid>
-      <description>Reverse engineering a legacy 16-bit DOS executable to bypass a custom implementation of the MD2 hash algorithm.</description>
     </item>
   </channel>
 </rss>
