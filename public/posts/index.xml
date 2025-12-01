@@ -1,22 +1,47 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Posts on Kaiyue Wei</title><link>https://kaiyuewei.me/posts/</link><description>Recent content in Posts on Kaiyue Wei</description><generator>Hugo -- 0.147.5</generator><language>en-us</language><lastBuildDate>Wed, 25 Jun 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://kaiyuewei.me/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Vim Practice001</title><link>https://kaiyuewei.me/posts/practice001/</link><pubDate>Wed, 25 Jun 2025 00:00:00 +0000</pubDate><guid>https://kaiyuewei.me/posts/practice001/</guid><description>&lt;h1 id="macro">Macro&lt;/h1>
-&lt;ul>
-&lt;li>q{character} to start recording a macro in register {character}&lt;/li>
-&lt;li>q to stop recording&lt;/li>
-&lt;li>@{character} replays the macro&lt;/li>
-&lt;li>Macro execution stops on error&lt;/li>
-&lt;li>{number}@{character} executes a macro {number} times&lt;/li>
-&lt;li>Macros can be recursive
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Posts on Kaiyue Wei</title>
+    <link>http://localhost:1313/posts/</link>
+    <description>Recent content in Posts on Kaiyue Wei</description>
+    <generator>Hugo -- 0.148.2</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 25 Jun 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Vim Practice001</title>
+      <link>http://localhost:1313/posts/practice001/</link>
+      <pubDate>Wed, 25 Jun 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/practice001/</guid>
+      <description>&lt;h1 id=&#34;macro&#34;&gt;Macro&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;q{character} to start recording a macro in register {character}&lt;/li&gt;
+&lt;li&gt;q to stop recording&lt;/li&gt;
+&lt;li&gt;@{character} replays the macro&lt;/li&gt;
+&lt;li&gt;Macro execution stops on error&lt;/li&gt;
+&lt;li&gt;{number}@{character} executes a macro {number} times&lt;/li&gt;
+&lt;li&gt;Macros can be recursive
 first clear the macro with q{character}q
-record the macro, with @{character} to invoke the macro recursively (will be a no-op until recording is complete)&lt;/li>
-&lt;/ul>
-&lt;h1 id="practice-1-convert-xml-to-json">Practice 1 Convert xml to json&lt;/h1>
-&lt;h2 id="step0">Step0&lt;/h2>
-&lt;p>curl -O &lt;a href="https://missing.csail.mit.edu/2020/files/example-data.xml">https://missing.csail.mit.edu/2020/files/example-data.xml&lt;/a>&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-xml" data-lang="xml">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">&amp;lt;person&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;lt;name&amp;gt;&lt;/span>Johnny Zhang Jr.&lt;span style="color:#f92672">&amp;lt;/name&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;lt;email&amp;gt;&lt;/span>amyalvarez@cole.com&lt;span style="color:#f92672">&amp;lt;/email&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">&amp;lt;/person&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img alt="step0" loading="lazy" src="https://kaiyuewei.me/portfolio/practice1_step0.gif">&lt;/p></description></item></channel></rss>
+record the macro, with @{character} to invoke the macro recursively (will be a no-op until recording is complete)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;practice-1-convert-xml-to-json&#34;&gt;Practice 1 Convert xml to json&lt;/h1&gt;
+&lt;h2 id=&#34;step0&#34;&gt;Step0&lt;/h2&gt;
+&lt;p&gt;curl -O &lt;a href=&#34;https://missing.csail.mit.edu/2020/files/example-data.xml&#34;&gt;https://missing.csail.mit.edu/2020/files/example-data.xml&lt;/a&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-xml&#34; data-lang=&#34;xml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;person&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;Johnny Zhang Jr.&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;email&amp;gt;&lt;/span&gt;amyalvarez@cole.com&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;/email&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;/person&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img alt=&#34;step0&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/portfolio/practice1_step0.gif&#34;&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>CyberSCI CTF Write-up: Water Treatment (Part 1)</title>
+      <link>http://localhost:1313/posts/cybersci-ctf-writeup/</link>
+      <pubDate>Fri, 27 Oct 2023 10:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/cybersci-ctf-writeup/</guid>
+      <description>Reverse engineering a legacy 16-bit DOS executable to bypass a custom implementation of the MD2 hash algorithm.</description>
+    </item>
+  </channel>
+</rss>
