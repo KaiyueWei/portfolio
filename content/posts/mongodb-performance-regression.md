@@ -162,6 +162,8 @@ A few takeaways I’d reuse for the next performance regression:
 
 ## Artifacts / Repro Notes
 
+The full reproduction scripts and logs are available here: [KaiyueWei/mongo-server-44991](https://github.com/KaiyueWei/mongo-server-44991).
+
 If you want to reproduce the same analysis style, these are the core artifacts I generated:
 
 *   `results/flamegraph_mongo-4.0.13.svg`
