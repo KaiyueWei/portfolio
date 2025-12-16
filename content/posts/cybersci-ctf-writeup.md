@@ -97,6 +97,8 @@ Further confirming this, I found a loop in the decompilation that matched the MD
 During the analysis, I faced a couple of interesting hurdles:
 
 ### MS-DOS Segmentation & Ghidra
+Segmentations
+Memory models in MS-DOS are composed of segments which are contiguous 64KB chunks of memory. Memory references are composed of two parts: segment and offset.
 Ghidra did not automatically link the data and the functions referencing that data. This is a common pain point with 16-bit MS-DOS executables due to segmented memory models. I had to manually follow segment:offset pairs to understand where data was being read from.
 
 ### Recognizing the Hash Function
@@ -161,3 +163,8 @@ It turns out that `waterworkz` is the password, which corresponds to the second 
 
 **Flag 1 (System Name):** `neptune2000`
 **Flag 2 (Password):** `waterworkz`
+
+
+## References
+[1]https://blogsystem5.substack.com/p/dos-memory-models
+
