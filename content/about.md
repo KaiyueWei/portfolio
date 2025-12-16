@@ -7,7 +7,7 @@ Hi, I'm **Kaiyue Wei**.
 
 I am a Master's student passionate about **Systems Programming**, **Operating Systems**, and **Security**.
 
-I enjoy diving deep into low-level code, reverse engineering legacy executables (as you might have seen in my CTF write-ups!), and building efficient software.
+I enjoy diving deep into low-level code, performance bug root cause analysis, and building efficient software.
 
 ### Connect with me
 - **GitHub**: [KaiyueWei](https://github.com/KaiyueWei)
