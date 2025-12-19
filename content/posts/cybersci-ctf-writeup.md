@@ -24,7 +24,8 @@ $ file wt.exe
 wt.exe: MS-DOS executable, MZ for MS-DOS
 ```
 
-This confirmed it was a legacy 16-bit MS-DOS executable. To run it, I installed **DOSBox**. Upon running the executable in DOSBox, I was presented with the interface which revealed the system name `neptune2000` (Flag 1).
+This confirmed it was a legacy 16-bit MS-DOS executable. To run it, I installed **DOSBox**. Upon running the executable in DOSBox, I was presented with the interface which revealed the system name `Neptune2000` (Flag 1) and followed by "Enter password: ".
+![Flag1](/images/flag1.png)
 
 After this initial check, I loaded the binary into Ghidra and ran the auto-analysis (making sure to select the 16-bit x86 Real Mode processor). I started by looking for "low hanging fruit"—strings.
 
@@ -121,8 +122,7 @@ TARGET = bytes.fromhex("9E 46 24 8D 91 FD CB EC B3 F4 BA 7C AA E3 8B 0D")
 
 def main():
     print(f"[*] Brute-forcing MD2 target...")
-    
-    # Standard rockyou.txt location on Kali
+   
     wordlist_path = "/usr/share/wordlists/rockyou.txt"
     
     try:
