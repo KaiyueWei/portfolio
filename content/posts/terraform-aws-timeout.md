@@ -1,123 +1,120 @@
 ---
-title: "Investigating Terraform Timeouts for AWS S3 Lifecycle Configuration"
+title: "Terraform AWS S3 Lifecycle Timeout Issue: Root Cause Analysis and Optimization"
 date: '2025-12-26T00:00:00-07:00'
 draft: false
-categories: ["Cloud", "Terraform", "AWS"]
-tags: ["Terraform", "AWS", "S3", "Distributed Systems", "Consistency", "Reliability"]
-description: "Why Terraform can time out applying S3 lifecycle rules: control-plane eventual consistency, waiter design, and measured propagation delays." 
+categories: ["DistributedSystem", "AWS S3", "Terraform"]
+tags: ["AWS S3", "Terraform"]
+description: "Root cause analysis"
 ---
 
-Terraform occasionally times out while applying **S3 bucket lifecycle configuration** (see hashicorp/terraform-provider-aws issue #25939). This write-up explains what’s happening, validates the consistency behavior with small test suites, and outlines polling/waiter strategies that reduce timeouts without hammering APIs.
 
-<!--more-->
+# Background
 
-## Background: Terraform’s Plan / Apply loop
+## What is Terraform
 
-Terraform’s workflow is:
+The core mechanism for managing the entire application infrastructure is moving away from manual infrastructure management (logging into a console, running commands) to defining infrastructure declaratively as configuration files or code.  
+Management Workflow (Major Operations: Plan and Apply)  
+The evolution of the application infrastructure is handled through a repeatable two-step workflow:  
+1\. Plan: Terraform compares the desired configuration (defined in HCL, the HashiCorp Configuration Language) with the current reality (the existing configuration or state) to generate an execution plan. The plan allows the operator to inspect exactly what Terraform intends to do: create a new resource, modify an existing resource, or delete something. This provides high confidence before any changes are made.  
+2\. Apply: Once the plan is reviewed and approved, the apply operation executes the plan, moving the infrastructure from one state (State 1\) to a new state (State 2\)
 
-1. **Plan**: compute the diff between desired config (HCL) and current state.
-2. **Apply**: call provider APIs to converge reality to the plan.
+![Fig. 1](/images/terraform-s3/Fig1.png)  
+Fig. 1
 
-![Terraform workflow: plan and apply](/images/terraform-s3/image1.png)
+Provider Ecosystem
 
-Terraform’s power comes from providers (e.g., AWS), but that also means Terraform inherits the consistency and propagation characteristics of cloud control planes.
+The provider ecosystem is what makes Terraform flexible and powerful, enabling it to manage infrastructure in a consistent way across diverse environments  
+One of them is the cloud computing services, like Amazon, Google and Azure.
 
-## Problem statement
+## What is AWS S3 Distributed and Replicated Database
 
-When applying an S3 lifecycle configuration, Terraform may write the lifecycle rule successfully but fail to observe the new configuration consistently before its timeout expires.
+The following table compares the key storage classes used in S3 Lifecycle policies. Prices are based on the **US East (N. Virginia)** region and are subject to change.
 
-The symptom looks like: “we set it, but reads keep returning old or inconsistent state”.
+| Storage Class | Designed For (Use Case) | Availability Zones | Min Storage Duration | Storage Cost ($/GB/mo) | Retrieval Cost / Time |
+| :---- | :---- | :---- | :---- | :---- | :---- |
+| S3 Standard | Active Data: Frequently accessed files, content distribution, dynamic websites. | ≥ 3 | None | \*\*$0.023\*\* | Free (Instant) |
+| S3 Intelligent-Tiering | Unknown Patterns: Data with changing access needs. Moves data automatically. | ≥ 3 | None\* | Tiered (Freq: $0.023, Infreq: $0.0125) | Free (Instant) |
+| S3 Standard-IA | Infrequent Access: Long-lived data accessed less than once a month but needed instantly. | ≥ 3 | 30 Days | \*$0.0125\* | $0.01 / GB (Instant) |
+| S3 One Zone-IA | Re-creatable Data: Secondary backups or data you can regenerate if the AZ fails. | 1 | 30 Days | $0.0100 | $0.01 / GB (Instant) |
+| S3 Glacier Instant Retrieval | Archive (Fast): Medical records or news footage that is rarely accessed but needs to be seen now. | ≥ 3 | 90 Days | $0.0040 | $0.03 / GB (Instant) |
+| S3 Glacier Flexible Retrieval | Archive (Backup): Traditional backups where waiting minutes or hours is acceptable. | ≥ 3 | 90 Days | $0.0036 | Free (Bulk) or $$ (Std) (1 min \- 12 hrs) |
+| S3 Glacier Deep Archive | Cold Archive: Compliance retention (e.g., tax/legal records for 7-10 years). | ≥ 3 | 180 Days | $0.00099 | $0.02 / GB (12 \- 48 hrs) |
 
-## Root cause: S3 consistency is different for data plane vs control plane
+Key Takeaways
 
-S3’s **data plane** (object PUT/GET/LIST) is strongly consistent (since Dec 2020). But many **control plane** operations (bucket-level configuration metadata) can exhibit propagation delays.
+1. The Retrieval Trap: Notice that Glacier Instant Retrieval storage ($0.0040) is very cheap, but the retrieval cost ($0.03/GB) is actually higher than the cost of storing that data in S3 Standard for a whole month. Only use it if you rarely touch the data.  
+2. The One-Zone Risk: S3 One Zone-IA is \~20% cheaper than Standard-IA, but because it exists in only 1 Availability Zone, you could lose data during a natural disaster affecting that specific data center. Never use it for master copies.  
+3. Deep Archive Savings: Deep Archive is roughly 1/23rd the price of S3 Standard. It is the most cost-effective way to store data you effectively never expect to read again.
 
-That means:
+\*Intelligent-Tiering has no minimum duration for the storage itself, but objects smaller than 128KB are kept at the Frequent Access tier rate.
 
-- **Data plane**: write an object, immediately read it → you get the latest.
-- **Control plane**: update bucket lifecycle configuration, immediately read it → you might get *old* config depending on which replica serves the read.
+# Investigation
 
-## Why Terraform waiters struggle here
+## Issue
 
-Terraform uses a “waiter” pattern for resources where an immediate read after write may not reflect the update. Two problems show up under eventual consistency:
+[https://github.com/hashicorp/terraform-provider-aws/issues/25939](https://github.com/hashicorp/terraform-provider-aws/issues/25939)  
+Timeout Issue from applying S3 lifecycle configuration using terraform
 
-1. **Stale reads**: a GET after PUT can return the previous config.
-2. **Flapping**: one GET might show success, then a subsequent GET might hit a lagging replica and show the old value again.
+## Root Cause Analysis
 
-![Control plane: stale reads](/images/terraform-s3/image2.png)
+### Consistency Model in AWS S3
 
-![Fixed-interval polling](/images/terraform-s3/image3.png)
+The root cause is that AWS S3 provide eventual consistency on the data-control plane(lifecycle configuration)
 
-![Stability checks to avoid flapping](/images/terraform-s3/image4.png)
+1\. Data Plane: Strong Consistency
 
-In practice, a fixed polling interval plus “N consecutive successes” can be:
+Since December 2020, Amazon S3 provides strong read-after-write consistency for PUTs and DELETEs of objects in all AWS Regions.
 
-- **Too slow on the happy path** (wastes time proving stability when the system already converged)
-- **Not robust in the tail** (doesn’t adapt when propagation is slower than usual)
+* Scenario: You write image.jpg. You immediately call LIST objects.  
+* Result: S3 guarantees image.jpg will appear in the list. You do not need to wait for propagation.
 
-## Verification: measuring S3 behavior with simple test suites
+2\. Control Plane: Eventual Consistency
 
-To validate the model, I used two small Python test suites:
+The "Control Plane" manages the container (the bucket) and its rules. These operations are not instantaneous across the massive distributed system.
 
-- **Sequential test**: serial operations (baseline).
-- **Concurrent test**: parallel operations (“thundering herd”) to amplify tail behavior.
+* Scenario: You delete a bucket named my-test-bucket. You immediately try to create a new bucket with the same name.  
+* Result: It might fail with BucketAlreadyExists or OperationAborted because the "deletion" event hasn't propagated to the node handling your "create" request yet.  
+* Scenario: You apply a Bucket Policy to block public access.
 
-### Data plane (strong consistency)
+Result: It may take a few moments for that policy to be enforced on every single request entering the system.
 
-Objective: after `put_object`, immediately `get_object`, verify the body.
+| Feature | Action | Propagation Model | Consistency Model |
+| :---- | :---- | :---- | :---- |
+| **Object Upload** | Putting a file (my-photo.jpg) | **Synchronous Replication:** The data is physically copied to ≥3 AZs *before* you get a success message. | **Strong Consistency** (Read-after-Write) |
+| **Bucket Creation** | Creating a bucket (my-bucket) | **Metadata Update:** This is a logical entry in the S3 region's directory. It is durable but distributed via a gossiping or eventual protocol. | **Eventual Consistency** (May not be visible instantly) |
+| **Lifecycle Config** | Adding a rule (Move to Glacier) | **Metadata Update \+ Async Execution:** The rule is saved instantly to the metadata, but the *action* is performed by a background scanner. | **Eventual Consistency** (Rule applies over time) |
 
-| Metric | Sequential | Concurrent |
-| :---: | :---: | :---: |
-| Success rate | 100% | 100% |
-| Mean latency | 99.26 ms | 302.38 ms |
-| P99 latency | 225.72 ms | 414.45 ms |
+### How Terraform Handles
 
-![Data plane latency distribution](/images/terraform-s3/image5.png)
+This timeout issue in Terraform S3 Lifecycle Configuration is a textbook example of the friction between Infrastructure tools built on AWS API and eventual Consistency models.
 
-### Control plane (eventual consistency)
+While S3 lifecycle configuration metadata is replicated across the control plane fleet to ensure durability, this replication is not instantaneous. This propagation delay introduces two distinct challenges for infrastructure-as-code tools like Terraform.  
+![Fig. 2](/images/terraform-s3/Fig2.png)  
+Fig. 2
 
-Objective: after `put_bucket_lifecycle_configuration`, poll `get_bucket_lifecycle_configuration` until the new config is visible.
+Problem 1: Stale Reads   
+Immediately after a write, a read request may return old data. This forces a difficult choice: sleep longer (introducing high latency) or poll frequently (creating high API load).  
+![Fig. 3](/images/terraform-s3/Fig3.png)  
+Fig. 3
 
-| Metric | Sequential | Concurrent “racer” |
-| :---: | :---: | :---: |
-| Success rate | 100% | 100% |
-| Mean propagation | 0.07 s | 1.85 s |
-| Max propagation | 1.09 s | 11.83 s |
-| “Instant” visibility (<1s) | 98% | 52% |
+Terraform's Approach: The current S3 waiter implementation relies on a fixed polling interval (a "magic number," typically 5 seconds).
 
-![Control plane propagation delays](/images/terraform-s3/image6.png)
+Problem2: Flapping Consistency   
+In a distributed system, a single "Success" response is not a guarantee of permanent convergence. A subsequent request might be routed to a different, lagging replica, causing the state to "flap" between configured and unconfigured.
 
-Additional views:
+![Fig. 4](/images/terraform-s3/Fig4.png)
 
-![CDF of propagation time](/images/terraform-s3/image7.png)
+Fig. 4
 
-![Polling count vs propagation time](/images/terraform-s3/image8.png)
+Terraform's Approach: To mitigate flapping, the waiter implements a "stability check." It does not accept a single success; it requires the success state to be observed consistently across consecutive checks (10 times in a row).
 
-## Optimization: testing waiter strategies under realistic delays
+### The Root Cause of Timeouts 
 
-In small lab environments, propagation often looks “instant”, so timeouts are hard to reproduce. To approximate production behavior, I injected synthetic delays sampled from a heavy-tailed percentile distribution (based on reported/observed production-like latencies).
+The fundamental flaw in this waiter logic is that it is inefficient for the "happy path" (wasting time verification when the system is already consistent) yet too rigid for the "tail latency path" (failing to adapt when AWS propagation is slower than usual). This rigidity is the primary driver behind the s3\_lifecycle\_configuration timeout errors.
 
-Then I compared a few waiter strategies:
+# Verification of Consistency Model on AWS S3
 
-- **Baseline**: fixed polling interval + stability check.
-- **Extended timeout**: same strategy, longer maximum wait.
-- **Adaptive**: learn a timeout budget from observed percentiles.
-- **Hybrid**: front-load fast checks, then back off and apply a stability window.
-
-![Strategy comparison summary](/images/terraform-s3/image9.png)
-
-## Takeaways
-
-- The bug/timeout behavior is explained by **control-plane propagation delay**, not by “S3 being broken”.
-- Fixed waiters can be both wasteful (happy path) and brittle (tail).
-- Better waiters are possible: adaptive/hybrid schedules can improve success rates while reducing API calls.
-
-## References
-
-- https://github.com/hashicorp/terraform-provider-aws/issues/25939
-- https://www.youtube.com/watch?v=E7dWUJD57BU
-- https://medium.com/@ksumedh001/5-critical-network-trade-offs-in-system-design-striking-the-right-balance-e2087c9bd032
-
+This section details the empirical verification of the AWS S3 consistency model, building upon the previous investigation. We utilized two Python test suites to validate the consistency guarantees for both the Data Plane and the Control Plane.
 
 ## Test Suite Overview
 
@@ -161,9 +158,9 @@ Observation:
 
 The Data Plane demonstrated Strong Consistency. In 100% of the cases, the GET request immediately following the PUT returned the correct object. Even under concurrent load, while latency increased, consistency was maintained.
 
-![][image5]
+![Fig. 5](/images/terraform-s3/Fig5.png)
 
-Figure 4: Data Plane Latency Distribution
+Fig. 5
 
 Control Plane (Eventual Consistency)
 
@@ -182,21 +179,23 @@ The Control Plane demonstrated Eventual Consistency.
 * In the **Concurrent** test, the eventual nature became much more apparent. The mean propagation time increased to 1.85s, with a worst-case delay of **11.83s**.  
 * Only 52% of concurrent updates were instantly visible, confirming that control plane operations are not strongly consistent.
 
-![][image6]
+![Fig. 6](/images/terraform-s3/Fig6.png)
 
-Figure 4.2: Control Plane Propagation Delays
+Fig. 6
 
 Additional Control Plane Insights
 
 The following charts detail the tail latency and the relationship between API calls and propagation time during the concurrent "Racer" test.
 
-![][image7]
+![Fig. 7](/images/terraform-s3/Fig7.png)
+
+Fig. 7
 
 Figure 4.3: Cumulative Distribution Function (CDF) of Propagation Time
 
-![][image8]
+![Fig. 8](/images/terraform-s3/Fig8.png)
 
-Figure 4.4: API Polling Count vs. Propagation Time
+Fig. 8
 
 ## Conclusion
 
@@ -343,6 +342,7 @@ GET check \#52 (at 156s) → Simulated: NOW visible ✓
 SUCCESS (total time: approximately 156s)
 
 Key Implementation Detail  
+```python
 def check\_configuration\_match(self, expected\_config):  
     """Override to simulate eventual consistency"""  
       
@@ -360,6 +360,7 @@ def check\_configuration\_match(self, expected\_config):
     else:  
         \# Still "propagating" \- return False  
         return False
+```
 
 **What this does:**
 
@@ -527,16 +528,11 @@ This gives us comprehensive data across the entire distribution\!
 
 This research demonstrates that **smart polling strategies** can simultaneously improve success rates AND reduce API costs\!
 
-![][image9]
-
-# 
-
-# 
+![Fig. 9](/images/terraform-s3/Fig9.png)  
+Fig. 9
 
 # References
 
 [https://medium.com/@ksumedh001/5-critical-network-trade-offs-in-system-design-striking-the-right-balance-e2087c9bd032](https://medium.com/@ksumedh001/5-critical-network-trade-offs-in-system-design-striking-the-right-balance-e2087c9bd032)
 
 [https://www.youtube.com/watch?v=E7dWUJD57BU](https://www.youtube.com/watch?v=E7dWUJD57BU)
-
-# 

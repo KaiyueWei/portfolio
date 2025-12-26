@@ -6,8 +6,15 @@
     <description>Recent content on Kaiyue Wei</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 16 Dec 2025 00:00:00 -0700</lastBuildDate>
+    <lastBuildDate>Fri, 26 Dec 2025 00:00:00 -0700</lastBuildDate>
     <atom:link href="https://kaiyuewei.me/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Investigating Terraform Timeouts for AWS S3 Lifecycle Configuration</title>
+      <link>https://kaiyuewei.me/posts/terraform_aws_s3_investigation/</link>
+      <pubDate>Fri, 26 Dec 2025 00:00:00 -0700</pubDate>
+      <guid>https://kaiyuewei.me/posts/terraform_aws_s3_investigation/</guid>
+      <description>Why Terraform can time out applying S3 lifecycle rules: control-plane eventual consistency, waiter design, and measured propagation delays.</description>
+    </item>
     <item>
       <title>Debugging a MongoDB Performance Regression with perf, Flamegraphs, and gdb (4.2.1 vs 4.0.13)</title>
       <link>https://kaiyuewei.me/posts/mongodb-performance-regression/</link>

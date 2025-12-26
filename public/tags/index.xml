@@ -6,8 +6,50 @@
     <description>Recent content in Tags on Kaiyue Wei</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 16 Dec 2025 00:00:00 -0700</lastBuildDate>
+    <lastBuildDate>Fri, 26 Dec 2025 00:00:00 -0700</lastBuildDate>
     <atom:link href="https://kaiyuewei.me/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>AWS</title>
+      <link>https://kaiyuewei.me/tags/aws/</link>
+      <pubDate>Fri, 26 Dec 2025 00:00:00 -0700</pubDate>
+      <guid>https://kaiyuewei.me/tags/aws/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Consistency</title>
+      <link>https://kaiyuewei.me/tags/consistency/</link>
+      <pubDate>Fri, 26 Dec 2025 00:00:00 -0700</pubDate>
+      <guid>https://kaiyuewei.me/tags/consistency/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Distributed Systems</title>
+      <link>https://kaiyuewei.me/tags/distributed-systems/</link>
+      <pubDate>Fri, 26 Dec 2025 00:00:00 -0700</pubDate>
+      <guid>https://kaiyuewei.me/tags/distributed-systems/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Reliability</title>
+      <link>https://kaiyuewei.me/tags/reliability/</link>
+      <pubDate>Fri, 26 Dec 2025 00:00:00 -0700</pubDate>
+      <guid>https://kaiyuewei.me/tags/reliability/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>S3</title>
+      <link>https://kaiyuewei.me/tags/s3/</link>
+      <pubDate>Fri, 26 Dec 2025 00:00:00 -0700</pubDate>
+      <guid>https://kaiyuewei.me/tags/s3/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Terraform</title>
+      <link>https://kaiyuewei.me/tags/terraform/</link>
+      <pubDate>Fri, 26 Dec 2025 00:00:00 -0700</pubDate>
+      <guid>https://kaiyuewei.me/tags/terraform/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Debugging</title>
       <link>https://kaiyuewei.me/tags/debugging/</link>

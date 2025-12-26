@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Investigating Terraform Timeouts for AWS S3 Lifecycle Configuration | Kaiyue Wei</title>
+<meta name="keywords" content="Terraform, AWS, S3, Distributed Systems, Consistency, Reliability">
+<meta name="description" content="Why Terraform can time out applying S3 lifecycle rules: control-plane eventual consistency, waiter design, and measured propagation delays.">
+<meta name="author" content="">
+<link rel="canonical" href="https://kaiyuewei.me/posts/terraform_aws_s3_investigation/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.8fe10233a706bc87f2e08b3cf97b8bd4c0a80f10675a143675d59212121037c0.css" integrity="sha256-j&#43;ECM6cGvIfy4Is8&#43;XuL1MCoDxBnWhQ2ddWSEhIQN8A=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://kaiyuewei.me/assets/favicon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://kaiyuewei.me/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://kaiyuewei.me/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://kaiyuewei.me/apple-touch-icon.png">
+<link rel="mask-icon" href="https://kaiyuewei.me/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://kaiyuewei.me/posts/terraform_aws_s3_investigation/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript><meta property="og:url" content="https://kaiyuewei.me/posts/terraform_aws_s3_investigation/">
+  <meta property="og:site_name" content="Kaiyue Wei">
+  <meta property="og:title" content="Investigating Terraform Timeouts for AWS S3 Lifecycle Configuration">
+  <meta property="og:description" content="Why Terraform can time out applying S3 lifecycle rules: control-plane eventual consistency, waiter design, and measured propagation delays.">
+  <meta property="og:locale" content="en-us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-12-26T00:00:00-07:00">
+    <meta property="article:modified_time" content="2025-12-26T00:00:00-07:00">
+    <meta property="article:tag" content="Terraform">
+    <meta property="article:tag" content="AWS">
+    <meta property="article:tag" content="S3">
+    <meta property="article:tag" content="Distributed Systems">
+    <meta property="article:tag" content="Consistency">
+    <meta property="article:tag" content="Reliability">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Investigating Terraform Timeouts for AWS S3 Lifecycle Configuration">
+<meta name="twitter:description" content="Why Terraform can time out applying S3 lifecycle rules: control-plane eventual consistency, waiter design, and measured propagation delays.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://kaiyuewei.me/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Investigating Terraform Timeouts for AWS S3 Lifecycle Configuration",
+      "item": "https://kaiyuewei.me/posts/terraform_aws_s3_investigation/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Investigating Terraform Timeouts for AWS S3 Lifecycle Configuration",
+  "name": "Investigating Terraform Timeouts for AWS S3 Lifecycle Configuration",
+  "description": "Why Terraform can time out applying S3 lifecycle rules: control-plane eventual consistency, waiter design, and measured propagation delays.",
+  "keywords": [
+    "Terraform", "AWS", "S3", "Distributed Systems", "Consistency", "Reliability"
+  ],
+  "articleBody": "Terraform occasionally times out while applying S3 bucket lifecycle configuration (see hashicorp/terraform-provider-aws issue #25939). This write-up explains what’s happening, validates the consistency behavior with small test suites, and outlines polling/waiter strategies that reduce timeouts without hammering APIs.\nBackground: Terraform’s Plan / Apply loop Terraform’s workflow is:\nPlan: compute the diff between desired config (HCL) and current state. Apply: call provider APIs to converge reality to the plan. Terraform’s power comes from providers (e.g., AWS), but that also means Terraform inherits the consistency and propagation characteristics of cloud control planes.\nProblem statement When applying an S3 lifecycle configuration, Terraform may write the lifecycle rule successfully but fail to observe the new configuration consistently before its timeout expires.\nThe symptom looks like: “we set it, but reads keep returning old or inconsistent state”.\nRoot cause: S3 consistency is different for data plane vs control plane S3’s data plane (object PUT/GET/LIST) is strongly consistent (since Dec 2020). But many control plane operations (bucket-level configuration metadata) can exhibit propagation delays.\nThat means:\nData plane: write an object, immediately read it → you get the latest. Control plane: update bucket lifecycle configuration, immediately read it → you might get old config depending on which replica serves the read. Why Terraform waiters struggle here Terraform uses a “waiter” pattern for resources where an immediate read after write may not reflect the update. Two problems show up under eventual consistency:\nStale reads: a GET after PUT can return the previous config. Flapping: one GET might show success, then a subsequent GET might hit a lagging replica and show the old value again. In practice, a fixed polling interval plus “N consecutive successes” can be:\nToo slow on the happy path (wastes time proving stability when the system already converged) Not robust in the tail (doesn’t adapt when propagation is slower than usual) Verification: measuring S3 behavior with simple test suites To validate the model, I used two small Python test suites:\nSequential test: serial operations (baseline). Concurrent test: parallel operations (“thundering herd”) to amplify tail behavior. Data plane (strong consistency) Objective: after put_object, immediately get_object, verify the body.\nMetric Sequential Concurrent Success rate 100% 100% Mean latency 99.26 ms 302.38 ms P99 latency 225.72 ms 414.45 ms Control plane (eventual consistency) Objective: after put_bucket_lifecycle_configuration, poll get_bucket_lifecycle_configuration until the new config is visible.\nMetric Sequential Concurrent “racer” Success rate 100% 100% Mean propagation 0.07 s 1.85 s Max propagation 1.09 s 11.83 s “Instant” visibility (\u003c1s) 98% 52% Additional views:\nOptimization: testing waiter strategies under realistic delays In small lab environments, propagation often looks “instant”, so timeouts are hard to reproduce. To approximate production behavior, I injected synthetic delays sampled from a heavy-tailed percentile distribution (based on reported/observed production-like latencies).\nThen I compared a few waiter strategies:\nBaseline: fixed polling interval + stability check.\nExtended timeout: same strategy, longer maximum wait.\nAdaptive: learn a timeout budget from observed percentiles.\nHybrid: front-load fast checks, then back off and apply a stability window.\nelif rand \u003c 0.90:\n# Next 15% of requests: P75-P90 (82-142 seconds)\nreturn random.uniform(82, 142)\nelif rand \u003c 0.95:\n# Next 5% of requests: P90-P95 (142-156 seconds)\nreturn random.uniform(142, 156)\nelif rand \u003c 0.99:\n# Next 4% of requests: P95-P99 (156-234 seconds)\nreturn random.uniform(156, 234)\nelse:\n# Rare 1% of requests: P99-Max (234-312 seconds)\nreturn random.uniform(234, 312)\nHow the Simulation Works Step-by-Step\nWithout Simulation (Learner Lab default):\nPUT request → 200 OK (0.5s)\n↓\nGET check #1 (at 3s) → Configuration visible ✓\n↓\nSUCCESS (total time: approximately 3s)\nWith Simulation (mimicking production):\nPUT request → 200 OK (0.5s)\n↓\nGenerate simulated delay: 156s [This would happen in production]\n↓\nGET check #1 (at 3s) → Simulated: Still propagating ✗\nGET check #2 (at 6s) → Simulated: Still propagating ✗\nGET check #3 (at 9s) → Simulated: Still propagating ✗\n…\nGET check #52 (at 156s) → Simulated: NOW visible ✓\n↓\nSUCCESS (total time: approximately 156s)\nKey Implementation Detail\ndef check_configuration_match(self, expected_config):\n“““Override to simulate eventual consistency”””\n\\# First check: Generate the delay for this test if not hasattr(self, '\\_simulated\\_delay'): self.\\_simulated\\_delay \\= self.\\_generate\\_propagation\\_delay() self.\\_propagation\\_start \\= time.time() print(f\" \\[Sim: {self.\\_simulated\\_delay:.1f}s\\]\", end='') \\# Check if enough time has passed elapsed \\= time.time() \\- self.\\_propagation\\_start if elapsed \\\u003e= self.\\_simulated\\_delay: \\# Propagation \"complete\" \\- do real AWS check return super().check\\_configuration\\_match(expected\\_config) else: \\# Still \"propagating\" \\- return False return False What this does:\nOn first check, generate a random delay (e.g., 156s) matching production distribution Keep returning False (not ready) until that much time has actually elapsed Only then allow the real AWS check to succeed This creates realistic test conditions that match production behavior!\nPart 4: Test Design - Four Strategy Comparison Strategy 2.1: Baseline (Current Terraform)\nConfiguration:\nPolling interval: Every 3 seconds (fixed) Timeout: 180 seconds Behavior:\nChecks 60 times (180s ÷ 3s = 60 checks) Coverage: P95 (156s \u003c 180s) Expected failures: approximately 5% (cases taking \u003e 180s) Theoretical analysis with simulation:\nCases under 180s: Success ✓ Cases over 180s (5% of requests): Timeout failure ✗ Strategy 2.2: Extended Timeout\nConfiguration:\nPolling interval: Every 3 seconds (fixed) Timeout: 600 seconds (10 minutes) Behavior:\nChecks 200 times (600s ÷ 3s = 200 checks) Coverage: Beyond P99 (234s \u003c 600s, even Max 312s \u003c 600s) Expected failures: \u003c1% Trade-offs:\n✓ Higher success rate ✗ No API call reduction - still checking every 3s ✗ Wastes time on genuine failures (waits full 10 minutes) Strategy 2.3: Adaptive Learning (Improved)\nConfiguration:\nPolling interval: Variable (2-15s, adjusts based on elapsed time) 0-30s: Every 2 seconds (dense early) 30-60s: Every 4 seconds 60-120s: Every 8 seconds 120-180s: Every 10 seconds 180s+: Every 15 seconds (sparse late) Timeout: Dynamic (300-600s, learned from past 20 tests) Innovation: Learns from experience\n# After each successful test, remember how long it took\nself.historical_times.append(result[‘propagation_time’])\n# Calculate timeout as: mean + 3 standard deviations\ntimeout = mean(historical_times) + 3 × stdev(historical_times)\nWhy this works:\nHigher minimum (300s vs 180s): Covers P90 (142s) during bootstrap, reducing early failures 3×stdev vs 2×stdev: Covers 99.7% of distribution instead of 95%, handles tail latency better Faster learning (3 tests vs 5): Enters adaptive mode sooner while still being conservative Adaptive intervals (2-15s): Dense early polling for common cases (P50), sparse late for tail (P99) Adaptation examples:\nIf recent tests averaged 50s: Sets timeout ≈ 200-250s (covers typical patterns + buffer) If recent tests averaged 150s: Sets timeout ≈ 450-500s (adapts to slower periods) Continuously adjusts to changing AWS behavior patterns Strategy 2.4: Hybrid Polling\nConfiguration:\nTime Range Polling Interval Rationale 0-30s 2 seconds Most requests complete quickly 30-60s 4 seconds Moderate cases 60-120s 8 seconds Less common 120-600s 15 seconds Rare tail cases Inspiration: “The Tail at Scale” (Jeff Dean)\nDense early polling captures the common case (P50 @ 48s) Sparse late polling handles rare slow cases without excessive API calls Example with P95 case (156s propagation):\nBaseline strategy (3s fixed):\nTotal checks: 52 times (156s ÷ 3s)\nHybrid strategy (variable):\n0-30s: 15 checks (30s ÷ 2s)\n30-60s: 7 checks (30s ÷ 4s)\n60-120s: 7 checks (60s ÷ 8s)\n120-156s: 2 checks (36s ÷ 15s)\nTotal: 31 checks\nAPI call reduction: 40% fewer calls! (31 vs 52)\nPart 5: What We’re Measuring Primary Metrics\n1. Success Rate\nSuccess Rate = (successful_tests / total_tests) × 100%\nGoal: \u003e95% (at least P95 coverage)\n2. Propagation Time Distribution\nFrom successful tests, calculate:\n- P50 = median propagation time\n- P90 = 90th percentile\n- P95 = 95th percentile\n- P99 = 99th percentile\n3. API Call Efficiency\nTotal API calls = 1 (PUT) + number_of_GET_checks\nAverage per test = mean(api_calls)\nWhy We Run 30 Iterations Per Strategy\nStatistical validity: 30 samples provide reliable percentile estimates Distribution coverage: With 30 tests, we expect: Approximately 15 tests in P0-P50 range (fast) Approximately 12 tests in P50-P90 range (moderate) Approximately 3 tests in P90-P99 range (slow) Approximately 0-1 tests in P99+ range (very slow) This gives us comprehensive data across the entire distribution!\nSummary: The Complete Picture The Challenge:\nAWS Learner Lab cannot reproduce real production propagation delays Real production shows heavy-tailed latency (P99 is 5 times longer than P50) Our Solution:\nInject simulated delays matching empirical production distribution Test four different waiter strategies under realistic conditions Expected Outcomes:\nBaseline: Approximately 95% success, but 60 API calls per test Extended: Approximately 99%+ success, but still 200 API calls (wasteful) Adaptive: Approximately 95%+ success, learns optimal timeout Hybrid: Approximately 99%+ success, 40% fewer API calls (best of both worlds) This research demonstrates that smart polling strategies can simultaneously improve success rates AND reduce API costs!\nReferences https://medium.com/@ksumedh001/5-critical-network-trade-offs-in-system-design-striking-the-right-balance-e2087c9bd032\nhttps://www.youtube.com/watch?v=E7dWUJD57BU\n",
+  "wordCount" : "1417",
+  "inLanguage": "en",
+  "datePublished": "2025-12-26T00:00:00-07:00",
+  "dateModified": "2025-12-26T00:00:00-07:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://kaiyuewei.me/posts/terraform_aws_s3_investigation/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Kaiyue Wei",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://kaiyuewei.me/assets/favicon.png"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://kaiyuewei.me/" accesskey="h" title="Kaiyue Wei (Alt + H)">Kaiyue Wei</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://kaiyuewei.me/about/" title="about">
+                    <span>about</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://kaiyuewei.me/tags/" title="tags">
+                    <span>tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://kaiyuewei.me/search/" title="search (Alt &#43; /)" accesskey=/>
+                    <span>search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Investigating Terraform Timeouts for AWS S3 Lifecycle Configuration
+    </h1>
+    <div class="post-description">
+      Why Terraform can time out applying S3 lifecycle rules: control-plane eventual consistency, waiter design, and measured propagation delays.
+    </div>
+    <div class="post-meta"><span title='2025-12-26 00:00:00 -0700 -0700'>December 26, 2025</span>
+
+</div>
+  </header> 
+  <div class="post-content"><p>Terraform occasionally times out while applying <strong>S3 bucket lifecycle configuration</strong> (see hashicorp/terraform-provider-aws issue #25939). This write-up explains what’s happening, validates the consistency behavior with small test suites, and outlines polling/waiter strategies that reduce timeouts without hammering APIs.</p>
+<h2 id="background-terraforms-plan--apply-loop">Background: Terraform’s Plan / Apply loop<a hidden class="anchor" aria-hidden="true" href="#background-terraforms-plan--apply-loop">#</a></h2>
+<p>Terraform’s workflow is:</p>
+<ol>
+<li><strong>Plan</strong>: compute the diff between desired config (HCL) and current state.</li>
+<li><strong>Apply</strong>: call provider APIs to converge reality to the plan.</li>
+</ol>
+<p><img alt="Terraform workflow: plan and apply" loading="lazy" src="/images/terraform-s3/image1.png"></p>
+<p>Terraform’s power comes from providers (e.g., AWS), but that also means Terraform inherits the consistency and propagation characteristics of cloud control planes.</p>
+<h2 id="problem-statement">Problem statement<a hidden class="anchor" aria-hidden="true" href="#problem-statement">#</a></h2>
+<p>When applying an S3 lifecycle configuration, Terraform may write the lifecycle rule successfully but fail to observe the new configuration consistently before its timeout expires.</p>
+<p>The symptom looks like: “we set it, but reads keep returning old or inconsistent state”.</p>
+<h2 id="root-cause-s3-consistency-is-different-for-data-plane-vs-control-plane">Root cause: S3 consistency is different for data plane vs control plane<a hidden class="anchor" aria-hidden="true" href="#root-cause-s3-consistency-is-different-for-data-plane-vs-control-plane">#</a></h2>
+<p>S3’s <strong>data plane</strong> (object PUT/GET/LIST) is strongly consistent (since Dec 2020). But many <strong>control plane</strong> operations (bucket-level configuration metadata) can exhibit propagation delays.</p>
+<p>That means:</p>
+<ul>
+<li><strong>Data plane</strong>: write an object, immediately read it → you get the latest.</li>
+<li><strong>Control plane</strong>: update bucket lifecycle configuration, immediately read it → you might get <em>old</em> config depending on which replica serves the read.</li>
+</ul>
+<h2 id="why-terraform-waiters-struggle-here">Why Terraform waiters struggle here<a hidden class="anchor" aria-hidden="true" href="#why-terraform-waiters-struggle-here">#</a></h2>
+<p>Terraform uses a “waiter” pattern for resources where an immediate read after write may not reflect the update. Two problems show up under eventual consistency:</p>
+<ol>
+<li><strong>Stale reads</strong>: a GET after PUT can return the previous config.</li>
+<li><strong>Flapping</strong>: one GET might show success, then a subsequent GET might hit a lagging replica and show the old value again.</li>
+</ol>
+<p><img alt="Control plane: stale reads" loading="lazy" src="/images/terraform-s3/image2.png"></p>
+<p><img alt="Fixed-interval polling" loading="lazy" src="/images/terraform-s3/image3.png"></p>
+<p><img alt="Stability checks to avoid flapping" loading="lazy" src="/images/terraform-s3/image4.png"></p>
+<p>In practice, a fixed polling interval plus “N consecutive successes” can be:</p>
+<ul>
+<li><strong>Too slow on the happy path</strong> (wastes time proving stability when the system already converged)</li>
+<li><strong>Not robust in the tail</strong> (doesn’t adapt when propagation is slower than usual)</li>
+</ul>
+<h2 id="verification-measuring-s3-behavior-with-simple-test-suites">Verification: measuring S3 behavior with simple test suites<a hidden class="anchor" aria-hidden="true" href="#verification-measuring-s3-behavior-with-simple-test-suites">#</a></h2>
+<p>To validate the model, I used two small Python test suites:</p>
+<ul>
+<li><strong>Sequential test</strong>: serial operations (baseline).</li>
+<li><strong>Concurrent test</strong>: parallel operations (“thundering herd”) to amplify tail behavior.</li>
+</ul>
+<h3 id="data-plane-strong-consistency">Data plane (strong consistency)<a hidden class="anchor" aria-hidden="true" href="#data-plane-strong-consistency">#</a></h3>
+<p>Objective: after <code>put_object</code>, immediately <code>get_object</code>, verify the body.</p>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: center">Metric</th>
+          <th style="text-align: center">Sequential</th>
+          <th style="text-align: center">Concurrent</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: center">Success rate</td>
+          <td style="text-align: center">100%</td>
+          <td style="text-align: center">100%</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">Mean latency</td>
+          <td style="text-align: center">99.26 ms</td>
+          <td style="text-align: center">302.38 ms</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">P99 latency</td>
+          <td style="text-align: center">225.72 ms</td>
+          <td style="text-align: center">414.45 ms</td>
+      </tr>
+  </tbody>
+</table>
+<p><img alt="Data plane latency distribution" loading="lazy" src="/images/terraform-s3/image5.png"></p>
+<h3 id="control-plane-eventual-consistency">Control plane (eventual consistency)<a hidden class="anchor" aria-hidden="true" href="#control-plane-eventual-consistency">#</a></h3>
+<p>Objective: after <code>put_bucket_lifecycle_configuration</code>, poll <code>get_bucket_lifecycle_configuration</code> until the new config is visible.</p>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: center">Metric</th>
+          <th style="text-align: center">Sequential</th>
+          <th style="text-align: center">Concurrent “racer”</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: center">Success rate</td>
+          <td style="text-align: center">100%</td>
+          <td style="text-align: center">100%</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">Mean propagation</td>
+          <td style="text-align: center">0.07 s</td>
+          <td style="text-align: center">1.85 s</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">Max propagation</td>
+          <td style="text-align: center">1.09 s</td>
+          <td style="text-align: center">11.83 s</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">“Instant” visibility (&lt;1s)</td>
+          <td style="text-align: center">98%</td>
+          <td style="text-align: center">52%</td>
+      </tr>
+  </tbody>
+</table>
+<p><img alt="Control plane propagation delays" loading="lazy" src="/images/terraform-s3/image6.png"></p>
+<p>Additional views:</p>
+<p><img alt="CDF of propagation time" loading="lazy" src="/images/terraform-s3/image7.png"></p>
+<p><img alt="Polling count vs propagation time" loading="lazy" src="/images/terraform-s3/image8.png"></p>
+<h2 id="optimization-testing-waiter-strategies-under-realistic-delays">Optimization: testing waiter strategies under realistic delays<a hidden class="anchor" aria-hidden="true" href="#optimization-testing-waiter-strategies-under-realistic-delays">#</a></h2>
+<p>In small lab environments, propagation often looks “instant”, so timeouts are hard to reproduce. To approximate production behavior, I injected synthetic delays sampled from a heavy-tailed percentile distribution (based on reported/observed production-like latencies).</p>
+<p>Then I compared a few waiter strategies:</p>
+<ul>
+<li>
+<p><strong>Baseline</strong>: fixed polling interval + stability check.</p>
+</li>
+<li>
+<p><strong>Extended timeout</strong>: same strategy, longer maximum wait.</p>
+</li>
+<li>
+<p><strong>Adaptive</strong>: learn a timeout budget from observed percentiles.</p>
+</li>
+<li>
+<p><strong>Hybrid</strong>: front-load fast checks, then back off and apply a stability window.</p>
+<p>elif rand &lt; 0.90:<br>
+# Next 15% of requests: P75-P90 (82-142 seconds)<br>
+return random.uniform(82, 142)<br>
+elif rand &lt; 0.95:<br>
+# Next 5% of requests: P90-P95 (142-156 seconds)<br>
+return random.uniform(142, 156)<br>
+elif rand &lt; 0.99:<br>
+# Next 4% of requests: P95-P99 (156-234 seconds)<br>
+return random.uniform(156, 234)<br>
+else:<br>
+# Rare 1% of requests: P99-Max (234-312 seconds)<br>
+return random.uniform(234, 312)</p>
+</li>
+</ul>
+<p>How the Simulation Works Step-by-Step</p>
+<p><strong>Without Simulation (Learner Lab default):</strong></p>
+<p>PUT request → 200 OK (0.5s)<br>
+↓<br>
+GET check #1 (at 3s) → Configuration visible ✓<br>
+↓<br>
+SUCCESS (total time: approximately 3s)</p>
+<p><strong>With Simulation (mimicking production):</strong></p>
+<p>PUT request → 200 OK (0.5s)<br>
+↓<br>
+Generate simulated delay: 156s [This would happen in production]<br>
+↓<br>
+GET check #1 (at 3s) → Simulated: Still propagating ✗<br>
+GET check #2 (at 6s) → Simulated: Still propagating ✗<br>
+GET check #3 (at 9s) → Simulated: Still propagating ✗<br>
+&hellip;<br>
+GET check #52 (at 156s) → Simulated: NOW visible ✓<br>
+↓<br>
+SUCCESS (total time: approximately 156s)</p>
+<p>Key Implementation Detail<br>
+def check_configuration_match(self, expected_config):<br>
+&ldquo;&ldquo;&ldquo;Override to simulate eventual consistency&rdquo;&rdquo;&rdquo;</p>
+<pre><code>\# First check: Generate the delay for this test  
+if not hasattr(self, '\_simulated\_delay'):  
+    self.\_simulated\_delay \= self.\_generate\_propagation\_delay()  
+    self.\_propagation\_start \= time.time()  
+    print(f&quot; \[Sim: {self.\_simulated\_delay:.1f}s\]&quot;, end='')  
+  
+\# Check if enough time has passed  
+elapsed \= time.time() \- self.\_propagation\_start  
+if elapsed \&gt;= self.\_simulated\_delay:  
+    \# Propagation &quot;complete&quot; \- do real AWS check  
+    return super().check\_configuration\_match(expected\_config)  
+else:  
+    \# Still &quot;propagating&quot; \- return False  
+    return False
+</code></pre>
+<p><strong>What this does:</strong></p>
+<ol>
+<li>On first check, generate a random delay (e.g., 156s) matching production distribution</li>
+<li>Keep returning <code>False</code> (not ready) until that much time has actually elapsed</li>
+<li>Only then allow the real AWS check to succeed</li>
+</ol>
+<p>This creates <strong>realistic test conditions</strong> that match production behavior!</p>
+<h2 id="part-4-test-design---four-strategy-comparison">Part 4: Test Design - Four Strategy Comparison<a hidden class="anchor" aria-hidden="true" href="#part-4-test-design---four-strategy-comparison">#</a></h2>
+<p>Strategy 2.1: Baseline (Current Terraform)</p>
+<p><strong>Configuration:</strong></p>
+<ul>
+<li>Polling interval: Every 3 seconds (fixed)</li>
+<li>Timeout: 180 seconds</li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Checks 60 times (180s ÷ 3s = 60 checks)</li>
+<li><strong>Coverage: P95</strong> (156s &lt; 180s)</li>
+<li><strong>Expected failures: approximately 5%</strong> (cases taking &gt; 180s)</li>
+</ul>
+<p><strong>Theoretical analysis with simulation:</strong></p>
+<ul>
+<li>Cases under 180s: Success ✓</li>
+<li>Cases over 180s (5% of requests): <strong>Timeout failure</strong> ✗</li>
+</ul>
+<p>Strategy 2.2: Extended Timeout</p>
+<p><strong>Configuration:</strong></p>
+<ul>
+<li>Polling interval: Every 3 seconds (fixed)</li>
+<li>Timeout: 600 seconds (10 minutes)</li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Checks 200 times (600s ÷ 3s = 200 checks)</li>
+<li><strong>Coverage: Beyond P99</strong> (234s &lt; 600s, even Max 312s &lt; 600s)</li>
+<li><strong>Expected failures: &lt;1%</strong></li>
+</ul>
+<p><strong>Trade-offs:</strong></p>
+<ul>
+<li>✓ Higher success rate</li>
+<li>✗ <strong>No API call reduction</strong> - still checking every 3s</li>
+<li>✗ Wastes time on genuine failures (waits full 10 minutes)</li>
+</ul>
+<p>Strategy 2.3: Adaptive Learning (Improved)</p>
+<p><strong>Configuration:</strong></p>
+<ul>
+<li>Polling interval: Variable (2-15s, adjusts based on elapsed time)
+<ul>
+<li>0-30s: Every 2 seconds (dense early)</li>
+<li>30-60s: Every 4 seconds</li>
+<li>60-120s: Every 8 seconds</li>
+<li>120-180s: Every 10 seconds</li>
+<li>180s+: Every 15 seconds (sparse late)</li>
+</ul>
+</li>
+<li>Timeout: Dynamic (300-600s, learned from past 20 tests)</li>
+</ul>
+<p><strong>Innovation: Learns from experience</strong></p>
+<p># After each successful test, remember how long it took</p>
+<p>self.historical_times.append(result[&lsquo;propagation_time&rsquo;])</p>
+<p># Calculate timeout as: mean + 3 standard deviations</p>
+<p>timeout = mean(historical_times) + 3 × stdev(historical_times)</p>
+<p><strong>Why this works:</strong></p>
+<ul>
+<li><strong>Higher minimum (300s vs 180s)</strong>: Covers P90 (142s) during bootstrap, reducing early failures</li>
+<li><strong>3×stdev vs 2×stdev</strong>: Covers 99.7% of distribution instead of 95%, handles tail latency better</li>
+<li><strong>Faster learning (3 tests vs 5)</strong>: Enters adaptive mode sooner while still being conservative</li>
+<li><strong>Adaptive intervals (2-15s)</strong>: Dense early polling for common cases (P50), sparse late for tail (P99)</li>
+</ul>
+<p><strong>Adaptation examples:</strong></p>
+<ul>
+<li>If recent tests averaged 50s: Sets timeout ≈ 200-250s (covers typical patterns + buffer)</li>
+<li>If recent tests averaged 150s: Sets timeout ≈ 450-500s (adapts to slower periods)</li>
+<li>Continuously adjusts to changing AWS behavior patterns</li>
+</ul>
+<p>Strategy 2.4: Hybrid Polling</p>
+<p><strong>Configuration:</strong></p>
+<table>
+  <thead>
+      <tr>
+          <th>Time Range</th>
+          <th>Polling Interval</th>
+          <th>Rationale</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>0-30s</td>
+          <td>2 seconds</td>
+          <td>Most requests complete quickly</td>
+      </tr>
+      <tr>
+          <td>30-60s</td>
+          <td>4 seconds</td>
+          <td>Moderate cases</td>
+      </tr>
+      <tr>
+          <td>60-120s</td>
+          <td>8 seconds</td>
+          <td>Less common</td>
+      </tr>
+      <tr>
+          <td>120-600s</td>
+          <td>15 seconds</td>
+          <td>Rare tail cases</td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Inspiration: &ldquo;The Tail at Scale&rdquo; (Jeff Dean)</strong></p>
+<ul>
+<li><strong>Dense early polling</strong> captures the common case (P50 @ 48s)</li>
+<li><strong>Sparse late polling</strong> handles rare slow cases without excessive API calls</li>
+</ul>
+<p><strong>Example with P95 case (156s propagation):</strong></p>
+<p>Baseline strategy (3s fixed):<br>
+Total checks: 52 times (156s ÷ 3s)</p>
+<p>Hybrid strategy (variable):<br>
+0-30s:    15 checks (30s ÷ 2s)<br>
+30-60s:   7 checks (30s ÷ 4s)<br>
+60-120s:  7 checks (60s ÷ 8s)<br>
+120-156s: 2 checks (36s ÷ 15s)<br>
+Total:    31 checks</p>
+<p>API call reduction: 40% fewer calls! (31 vs 52)</p>
+<h2 id="part-5-what-were-measuring">Part 5: What We&rsquo;re Measuring<a hidden class="anchor" aria-hidden="true" href="#part-5-what-were-measuring">#</a></h2>
+<p>Primary Metrics</p>
+<p><strong>1. Success Rate</strong></p>
+<p>Success Rate = (successful_tests / total_tests) × 100%<br>
+Goal: &gt;95% (at least P95 coverage)</p>
+<p><strong>2. Propagation Time Distribution</strong></p>
+<p>From successful tests, calculate:<br>
+- P50 = median propagation time<br>
+- P90 = 90th percentile<br>
+- P95 = 95th percentile<br>
+- P99 = 99th percentile</p>
+<p><strong>3. API Call Efficiency</strong></p>
+<p>Total API calls = 1 (PUT) + number_of_GET_checks<br>
+Average per test = mean(api_calls)</p>
+<p>Why We Run 30 Iterations Per Strategy</p>
+<ul>
+<li><strong>Statistical validity</strong>: 30 samples provide reliable percentile estimates</li>
+<li><strong>Distribution coverage</strong>: With 30 tests, we expect:
+<ul>
+<li>Approximately 15 tests in P0-P50 range (fast)</li>
+<li>Approximately 12 tests in P50-P90 range (moderate)</li>
+<li>Approximately 3 tests in P90-P99 range (slow)</li>
+<li>Approximately 0-1 tests in P99+ range (very slow)</li>
+</ul>
+</li>
+</ul>
+<p>This gives us comprehensive data across the entire distribution!</p>
+<h2 id="summary-the-complete-picture">Summary: The Complete Picture<a hidden class="anchor" aria-hidden="true" href="#summary-the-complete-picture">#</a></h2>
+<p><strong>The Challenge:</strong></p>
+<ul>
+<li>AWS Learner Lab cannot reproduce real production propagation delays</li>
+<li>Real production shows heavy-tailed latency (P99 is 5 times longer than P50)</li>
+</ul>
+<p><strong>Our Solution:</strong></p>
+<ul>
+<li>Inject simulated delays matching empirical production distribution</li>
+<li>Test four different waiter strategies under realistic conditions</li>
+</ul>
+<p><strong>Expected Outcomes:</strong></p>
+<ul>
+<li><strong>Baseline</strong>: Approximately 95% success, but 60 API calls per test</li>
+<li><strong>Extended</strong>: Approximately 99%+ success, but still 200 API calls (wasteful)</li>
+<li><strong>Adaptive</strong>: Approximately 95%+ success, learns optimal timeout</li>
+<li><strong>Hybrid</strong>: Approximately 99%+ success, <strong>40% fewer API calls</strong> (best of both worlds)</li>
+</ul>
+<p>This research demonstrates that <strong>smart polling strategies</strong> can simultaneously improve success rates AND reduce API costs!</p>
+<h1 id="references">References<a hidden class="anchor" aria-hidden="true" href="#references">#</a></h1>
+<p><a href="https://medium.com/@ksumedh001/5-critical-network-trade-offs-in-system-design-striking-the-right-balance-e2087c9bd032">https://medium.com/@ksumedh001/5-critical-network-trade-offs-in-system-design-striking-the-right-balance-e2087c9bd032</a></p>
+<p><a href="https://www.youtube.com/watch?v=E7dWUJD57BU">https://www.youtube.com/watch?v=E7dWUJD57BU</a></p>
+<h1></h1>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://kaiyuewei.me/tags/terraform/">Terraform</a></li>
+      <li><a href="https://kaiyuewei.me/tags/aws/">AWS</a></li>
+      <li><a href="https://kaiyuewei.me/tags/s3/">S3</a></li>
+      <li><a href="https://kaiyuewei.me/tags/distributed-systems/">Distributed Systems</a></li>
+      <li><a href="https://kaiyuewei.me/tags/consistency/">Consistency</a></li>
+      <li><a href="https://kaiyuewei.me/tags/reliability/">Reliability</a></li>
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://kaiyuewei.me/">Kaiyue Wei</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>
