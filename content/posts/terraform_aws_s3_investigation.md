@@ -1,7 +1,7 @@
 ---
 title: "Investigating Terraform Timeouts for AWS S3 Lifecycle Configuration"
 date: '2025-12-26T00:00:00-07:00'
-draft: true
+draft: false
 categories: ["Cloud", "Terraform", "AWS"]
 tags: ["Terraform", "AWS", "S3", "Distributed Systems", "Consistency", "Reliability"]
 description: "Why Terraform can time out applying S3 lifecycle rules: control-plane eventual consistency, waiter design, and measured propagation delays." 
