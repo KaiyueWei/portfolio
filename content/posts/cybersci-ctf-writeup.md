@@ -167,4 +167,6 @@ It turns out that `waterworkz` is the password, which corresponds to the second 
 
 ## References
 [1]https://blogsystem5.substack.com/p/dos-memory-models
+[2]https://handwiki.org/wiki/MD2_(hash_function)#MD2_hashes
+
 

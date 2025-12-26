@@ -2,17 +2,80 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Tags on Kaiyue Wei</title>
-    <link>http://localhost:1313/tags/</link>
+    <link>https://kaiyuewei.me/tags/</link>
     <description>Recent content in Tags on Kaiyue Wei</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 25 Jun 2025 21:55:38 -0700</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 16 Dec 2025 00:00:00 -0700</lastBuildDate>
+    <atom:link href="https://kaiyuewei.me/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Unix</title>
-      <link>http://localhost:1313/tags/unix/</link>
-      <pubDate>Wed, 25 Jun 2025 21:55:38 -0700</pubDate>
-      <guid>http://localhost:1313/tags/unix/</guid>
+      <title>Debugging</title>
+      <link>https://kaiyuewei.me/tags/debugging/</link>
+      <pubDate>Tue, 16 Dec 2025 00:00:00 -0700</pubDate>
+      <guid>https://kaiyuewei.me/tags/debugging/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Flamegraphs</title>
+      <link>https://kaiyuewei.me/tags/flamegraphs/</link>
+      <pubDate>Tue, 16 Dec 2025 00:00:00 -0700</pubDate>
+      <guid>https://kaiyuewei.me/tags/flamegraphs/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Gdb</title>
+      <link>https://kaiyuewei.me/tags/gdb/</link>
+      <pubDate>Tue, 16 Dec 2025 00:00:00 -0700</pubDate>
+      <guid>https://kaiyuewei.me/tags/gdb/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>MongoDB</title>
+      <link>https://kaiyuewei.me/tags/mongodb/</link>
+      <pubDate>Tue, 16 Dec 2025 00:00:00 -0700</pubDate>
+      <guid>https://kaiyuewei.me/tags/mongodb/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Perf</title>
+      <link>https://kaiyuewei.me/tags/perf/</link>
+      <pubDate>Tue, 16 Dec 2025 00:00:00 -0700</pubDate>
+      <guid>https://kaiyuewei.me/tags/perf/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Assembly</title>
+      <link>https://kaiyuewei.me/tags/assembly/</link>
+      <pubDate>Sun, 30 Nov 2025 00:00:00 -0700</pubDate>
+      <guid>https://kaiyuewei.me/tags/assembly/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Crypto</title>
+      <link>https://kaiyuewei.me/tags/crypto/</link>
+      <pubDate>Sun, 30 Nov 2025 00:00:00 -0700</pubDate>
+      <guid>https://kaiyuewei.me/tags/crypto/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>DOS</title>
+      <link>https://kaiyuewei.me/tags/dos/</link>
+      <pubDate>Sun, 30 Nov 2025 00:00:00 -0700</pubDate>
+      <guid>https://kaiyuewei.me/tags/dos/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Ghidra</title>
+      <link>https://kaiyuewei.me/tags/ghidra/</link>
+      <pubDate>Sun, 30 Nov 2025 00:00:00 -0700</pubDate>
+      <guid>https://kaiyuewei.me/tags/ghidra/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Python</title>
+      <link>https://kaiyuewei.me/tags/python/</link>
+      <pubDate>Sun, 30 Nov 2025 00:00:00 -0700</pubDate>
+      <guid>https://kaiyuewei.me/tags/python/</guid>
       <description></description>
     </item>
   </channel>
