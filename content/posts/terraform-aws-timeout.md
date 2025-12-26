@@ -1,5 +1,5 @@
 ---
-title: "Terraform AWS S3 Lifecycle Timeout Issue: Root Cause Analysis and Optimization"
+title: "Investigating Terraform Timeouts for AWS S3 Lifecycle Configuration"
 date: '2025-12-26T00:00:00-07:00'
 draft: false
 categories: ["DistributedSystem", "AWS S3", "Terraform"]
