@@ -9,7 +9,7 @@ description: "Reverse engineering a legacy 16-bit DOS executable to bypass a cus
 
 I recently tackled the **Water Treatment** reverse engineering challenge from the [CyberSCI Regionals 2025-26](https://github.com/CyberSCI/PastChallenges/tree/main/challenges/regionals-2025-26/re/water-treatment). The challenge involves a legacy 16-bit MS-DOS executable (`wt.exe`) and consists of three flags.
 
-I managed to solve the first flag during the hackathon and the second one afterwards. This post details how I cracked the password to get the "Access Granted" message.
+I managed to solve the first flag during the hackathon and the second one afterwards. This post details how I cracked the password to get access to the menu page.
 
 Here is how I went from raw assembly to a successful crack using Ghidra and Python.
 
@@ -166,12 +166,13 @@ Note: Why we use encoding = `latin-1` instead of `utf-8`?
 
 ## 6. Result
 
-I ran the script, and within a few seconds, it hit a match:
+I ran the script, and within a few seconds, it hit a match and allows me enter the menu:
 
 ```text
 [*] Checked 2800000...
 [!!!] PASSWORD FOUND: waterworkz
 ```
+![Flag2](/images/flag2.png)
 
 I fired up the executable in DOSBox, typed `waterworkz`, and bypassed the check!
 
