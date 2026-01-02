@@ -26,7 +26,7 @@ Before diving into Ghidra, I started with some basic file analysis. I used the `
 
 This confirmed it was a legacy 16-bit MS-DOS executable. To run it, I installed **DOSBox**. When I ran the executable in DOSBox, it displayed the system name `Neptune2000` (Flag 1) and then prompted: "Enter password: ".
 
-![System name output after launching wt.exe (Flag 1)](images/flag1.png)
+![System name output after launching wt.exe (Flag 1)](/images/flag1.png)
 
 After this initial check, I loaded the binary into Ghidra and ran the auto-analysis (making sure to select the 16-bit x86 Real Mode processor). I started by looking for "low hanging fruit"—strings.
 
@@ -176,7 +176,7 @@ I ran the script, and within a few seconds, it hit a match and allows me enter t
     [!!!] PASSWORD FOUND: waterworkz
 ```
 
-![Menu options after entering the recovered password (Flag 2)](images/flag2.png)
+![Menu options after entering the recovered password (Flag 2)](/images/flag2.png)
 
 I fired up the executable in DOSBox, typed `waterworkz`, and bypassed the check!
 
