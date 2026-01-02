@@ -15,7 +15,7 @@ Here is how I went from raw assembly to a successful crack using Ghidra and Pyth
 
 <!--more-->
 
-## 1. Initial Reconnaissance
+## Initial Reconnaissance
 
 Before diving into Ghidra, I started with some basic file analysis. I used the `file` command to check the file type and metadata:
 
@@ -25,24 +25,26 @@ Before diving into Ghidra, I started with some basic file analysis. I used the `
 ```
 
 This confirmed it was a legacy 16-bit MS-DOS executable. To run it, I installed **DOSBox**. When I ran the executable in DOSBox, it displayed the system name `Neptune2000` (Flag 1) and then prompted: "Enter password: ".
-![Flag1](/images/flag1.png)
+
+![System name output after launching wt.exe (Flag 1)](static/images/flag1.png)
 
 After this initial check, I loaded the binary into Ghidra and ran the auto-analysis (making sure to select the 16-bit x86 Real Mode processor). I started by looking for "low hanging fruit"—strings.
 
 Opening the Defined Strings window, I found a string:
 ```text
-13dc:0073: "Enter password: "
+    13dc:0073: "Enter password: "
 ```
+
 So I decided to find where this string is referenced and which function handles the comparison between the password and the user input.
 
 One hurdle here is 16-bit DOS segmentation. Memory is addressed with `segment:offset`, where each segment is a contiguous 64 KB window. Ghidra can recover a lot, but it doesn't always automatically connect data in one segment to code in another, so I had to manually follow these references.
 
 After searching, this is where the string was referenced inside `FUN_1000_01ee()`:
 ```assembly
-       1000:01fc b8 73 00        MOV        AX,s_Enter_password:_13dc_0073                   = "Enter password: "
+    1000:01fc b8 73 00  MOV   AX
 ```
 
-## 2. Analyzing the Logic
+## Analyzing the Logic
 
 The authentication logic in `FUN_1000_01ee` was relatively straightforward once the noise was filtered out. Here is the breakdown of the assembly flow:
 
@@ -61,29 +63,29 @@ The authentication logic in `FUN_1000_01ee` was relatively straightforward once 
 The function ending at `021c` (`FUN_memcmp`) takes the user input and compares it against 16 bytes stored at `0x644`. Naturally, I checked the memory at `0x644`.
 
 ```assembly
-       13dc:0644 9e              ??         9Eh
-       13dc:0645 46              ??         46h    F
-       13dc:0646 24              ??         24h    $
-       13dc:0647 8d              ??         8Dh
-       13dc:0648 91              ??         91h
-       13dc:0649 fd              ??         FDh
-       13dc:064a cb              ??         CBh
-       13dc:064b ec              ??         ECh
-       13dc:064c b3              ??         B3h
-       13dc:064d f4              ??         F4h
-       13dc:064e ba              ??         BAh
-       13dc:064f 7c              ??         7Ch    |
-       13dc:0650 aa              ??         AAh
-       13dc:0651 e3              ??         E3h
-       13dc:0652 8b              ??         8Bh
-       13dc:0653 0d              ??         0Dh
+    13dc:0644 9e              ??         9Eh
+    13dc:0645 46              ??         46h    F
+    13dc:0646 24              ??         24h    $
+    13dc:0647 8d              ??         8Dh
+    13dc:0648 91              ??         91h
+    13dc:0649 fd              ??         FDh
+    13dc:064a cb              ??         CBh
+    13dc:064b ec              ??         ECh
+    13dc:064c b3              ??         B3h
+    13dc:064d f4              ??         F4h
+    13dc:064e ba              ??         BAh
+    13dc:064f 7c              ??         7Ch    |
+    13dc:0650 aa              ??         AAh
+    13dc:0651 e3              ??         E3h
+    13dc:0652 8b              ??         8Bh
+    13dc:0653 0d              ??         0Dh
 ```
 
 These bytes are not ASCII characters. This confirms that the program isn't comparing our input against a plain-text password. It is hashing (or encrypting) our input first, then comparing the result.
 
 This means `FUN_1000_0010` (called right before the comparison) is our hashing function.
 
-## 3. Identifying the Algorithm
+## Identifying the Algorithm
 
 I dove into `FUN_1000_0010` to understand how the input was being transformed. The decompiled C code looked messy, but two specific patterns stood out.
 
@@ -91,7 +93,7 @@ I dove into `FUN_1000_0010` to understand how the input was being transformed. T
 
 The code heavily referenced a lookup table at address `0x43a`. I inspected this memory region:
 ```hex
-13dc:043a  29 2E 43 C9 A2 D8 7C 01 ...
+    13dc:043a  29 2E 43 C9 A2 D8 7C 01 ...
 ```
 
 A Google search for this byte prefix revealed it matches the MD2 S-table (derived from the digits of Pi). That lookup table is a strong signature for the **MD2 (Message Digest 2)** algorithm.
@@ -101,8 +103,8 @@ A Google search for this byte prefix revealed it matches the MD2 S-table (derive
 Further confirming this, I found a loop in the decompilation that matched the MD2 checksum update pattern (a rolling byte `L` over 16-byte blocks). In MD2, this update looks like `C[i] = C[i] XOR S[M[i] XOR L]` followed by `L = C[i]`.
 
 ```c
-// Ghidra Decompilation
-*(byte *)((*(byte *)(uVar6 + iVar4 + iStack_e) ^ bStack_a) + 0x43a);
+    // Ghidra Decompilation
+    *(byte *)((*(byte *)(uVar6 + iVar4 + iStack_e) ^ bStack_a) + 0x43a);
 ```
 *   `0x43a` is the S-Box.
 *   The `^` operator is the XOR.
@@ -110,7 +112,7 @@ Further confirming this, I found a loop in the decompilation that matched the MD
 
 **Conclusion:** The program hashes the user input using MD2 and compares it to the hardcoded hash at `0x644`.
 
-## 4. Challenges Encountered
+## Challenges Encountered
 
 During the analysis, I faced a couple of interesting hurdles:
 
@@ -120,7 +122,7 @@ MS-DOS executables use segmentation for memory layouts, and Ghidra doesn't alway
 ### Recognizing the Hash Function
 I am not familiar with legacy hash functions, so I didn't recognize the algorithm during the hackathon. The S-Box looked like random data at first. It wasn't until I searched for the specific byte sequence that I realized it was MD2.
 
-## 5. The Solution
+## The Solution
 
 Since MD2 is a one-way hash function, I couldn't just decrypt the target bytes. However, MD2 is an obsolete algorithm (from 1989), and the password was likely simple. This made it a perfect candidate for a dictionary attack.
 
@@ -161,18 +163,20 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-Note: Why we use encoding = `latin-1` instead of `utf-8`?
+**Note**: Why we use encoding = `latin-1` instead of `utf-8`?
+
 `rockyou.txt` commonly contains non-UTF-8 bytes; `latin-1` is often used here because it can decode any byte value without errors.
 
-## 6. Result
+## Result
 
 I ran the script, and within a few seconds, it hit a match and allows me enter the menu:
 
 ```text
-[*] Checked 2800000...
-[!!!] PASSWORD FOUND: waterworkz
+    [*] Checked 2800000...
+    [!!!] PASSWORD FOUND: waterworkz
 ```
-![Flag2](/images/flag2.png)
+
+![Menu options after entering the recovered password (Flag 2)](static/images/flag2.png)
 
 I fired up the executable in DOSBox, typed `waterworkz`, and bypassed the check!
 
