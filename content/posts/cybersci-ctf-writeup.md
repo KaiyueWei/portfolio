@@ -20,11 +20,11 @@ Here is how I went from raw assembly to a successful crack using Ghidra and Pyth
 Before diving into Ghidra, I started with some basic file analysis. I used the `file` command to check the file type and metadata:
 
 ```bash
-$ file wt.exe
-wt.exe: MS-DOS executable, MZ for MS-DOS
+    $ file wt.exe
+    wt.exe: MS-DOS executable, MZ for MS-DOS
 ```
 
-This confirmed it was a legacy 16-bit MS-DOS executable. To run it, I installed **DOSBox**. Upon running the executable in DOSBox, I was presented with the interface which revealed the system name `Neptune2000` (Flag 1) and followed by "Enter password: ".
+This confirmed it was a legacy 16-bit MS-DOS executable. To run it, I installed **DOSBox**. When I ran the executable in DOSBox, it displayed the system name `Neptune2000` (Flag 1) and then prompted: "Enter password: ".
 ![Flag1](/images/flag1.png)
 
 After this initial check, I loaded the binary into Ghidra and ran the auto-analysis (making sure to select the 16-bit x86 Real Mode processor). I started by looking for "low hanging fruit"—strings.
@@ -33,14 +33,13 @@ Opening the Defined Strings window, I found a string:
 ```text
 13dc:0073: "Enter password: "
 ```
-So I decided to find where this string is located and there must be some function that handles the comparison between the password and the user input.
-But the challenge I was faced with was Segmentations.
-Memory models in MS-DOS are composed of segments which are contiguous 64KB chunks of memory. Memory references are composed of two parts: segment and offset.
-Ghidra did not automatically link the data and the functions referencing that data. This is a common pain point with 16-bit MS-DOS executables due to segmented memory models. I had to manually follow segment:offset pairs to understand where data was being read from. 
+So I decided to find where this string is referenced and which function handles the comparison between the password and the user input.
+
+One hurdle here is 16-bit DOS segmentation. Memory is addressed with `segment:offset`, where each segment is a contiguous 64 KB window. Ghidra can recover a lot, but it doesn't always automatically connect data in one segment to code in another, so I had to manually follow these references.
 
 After searching, this is where the string was referenced inside `FUN_1000_01ee()`:
 ```assembly
-       1000:01fc b8 73 00        MOV        AX,s_Enter_password:_1000_3e33                   = "Enter password: "
+       1000:01fc b8 73 00        MOV        AX,s_Enter_password:_13dc_0073                   = "Enter password: "
 ```
 
 ## 2. Analyzing the Logic
@@ -95,11 +94,11 @@ The code heavily referenced a lookup table at address `0x43a`. I inspected this 
 13dc:043a  29 2E 43 C9 A2 D8 7C 01 ...
 ```
 
-A Google search for these hex values revealed they are the digits of Pi, which is the signature S-Box for the **MD2 (Message Digest 2)** algorithm.
+A Google search for this byte prefix revealed it matches the MD2 S-table (derived from the digits of Pi). That lookup table is a strong signature for the **MD2 (Message Digest 2)** algorithm.
 
 ### The Checksum Loop
 
-Further confirming this, I found a loop in the decompilation that matched the MD2 checksum formula: $L = S[m[i] \oplus L]$.
+Further confirming this, I found a loop in the decompilation that matched the MD2 checksum update pattern (a rolling byte `L` over 16-byte blocks). In MD2, this update looks like `C[i] = C[i] XOR S[M[i] XOR L]` followed by `L = C[i]`.
 
 ```c
 // Ghidra Decompilation
@@ -116,8 +115,7 @@ Further confirming this, I found a loop in the decompilation that matched the MD
 During the analysis, I faced a couple of interesting hurdles:
 
 ### MS-DOS Segmentation & Ghidra
-Memory models in MS-DOS are composed of segments which are contiguous 64KB chunks of memory. Memory references are composed of two parts: segment and offset.
-Ghidra did not automatically link the data and the functions referencing that data.I had to manually follow segment:offset pairs to understand where data was being read from.
+MS-DOS executables use segmentation for memory layouts, and Ghidra doesn't always infer segment assumptions the way you'd expect. I had to manually follow `segment:offset` pairs to confirm where data was being read from.
 
 ### Recognizing the Hash Function
 I am not familiar with legacy hash functions, so I didn't recognize the algorithm during the hackathon. The S-Box looked like random data at first. It wasn't until I searched for the specific byte sequence that I realized it was MD2.
@@ -132,13 +130,12 @@ This is a Python script using `pycryptodome` to hash passwords from the `rockyou
 
 ```python
 from Crypto.Hash import MD2
-import sys
 
 # The target hash extracted from 0x644
 TARGET = bytes.fromhex("9E 46 24 8D 91 FD CB EC B3 F4 BA 7C AA E3 8B 0D")
 
 def main():
-    print(f"[*] Brute-forcing MD2 target...")
+    print("[*] Brute-forcing MD2 target...")
    
     wordlist_path = "/usr/share/wordlists/rockyou.txt"
     
@@ -149,7 +146,7 @@ def main():
                 
                 # Calculate MD2
                 h = MD2.new()
-                h.update(password.encode())
+                h.update(password.encode("latin-1"))
                 
                 if h.digest() == TARGET:
                     print(f"\n[!!!] PASSWORD FOUND: {password}")
@@ -164,6 +161,8 @@ def main():
 if __name__ == "__main__":
     main()
 ```
+Note: Why we use encoding = `latin-1` instead of `utf-8`?
+`rockyou.txt` commonly contains non-UTF-8 bytes; `latin-1` is often used here because it can decode any byte value without errors.
 
 ## 6. Result
 
@@ -176,16 +175,13 @@ I ran the script, and within a few seconds, it hit a match:
 
 I fired up the executable in DOSBox, typed `waterworkz`, and bypassed the check!
 
-It turns out that `waterworkz` is the password, which corresponds to the second flag. The system name (Flag 1) is `neptune2000`.
+It turns out that `waterworkz` is the password, which corresponds to the second flag. The system name (Flag 1) is `Neptune2000`.
 
-**Flag 1 (System Name):** `neptune2000`
+**Flag 1 (System Name):** `Neptune2000`
 **Flag 2 (Password):** `waterworkz`
 
 
 ## References
-[1]https://blogsystem5.substack.com/p/dos-memory-models
-[2]https://handwiki.org/wiki/MD2_(hash_function)#MD2_hashes
-[3]https://datatracker.ietf.org/doc/html/rfc1319
-
-
-
+[1] https://blogsystem5.substack.com/p/dos-memory-models  
+[2] https://handwiki.org/wiki/MD2_(hash_function)#MD2_hashes  
+[3] https://datatracker.ietf.org/doc/html/rfc1319  
