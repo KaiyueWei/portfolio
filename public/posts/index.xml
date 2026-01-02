@@ -10,10 +10,10 @@
     <atom:link href="https://kaiyuewei.me/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Investigating Terraform Timeouts for AWS S3 Lifecycle Configuration</title>
-      <link>https://kaiyuewei.me/posts/terraform_aws_s3_investigation/</link>
+      <link>https://kaiyuewei.me/posts/terraform-aws-timeout/</link>
       <pubDate>Fri, 26 Dec 2025 00:00:00 -0700</pubDate>
-      <guid>https://kaiyuewei.me/posts/terraform_aws_s3_investigation/</guid>
-      <description>Why Terraform can time out applying S3 lifecycle rules: control-plane eventual consistency, waiter design, and measured propagation delays.</description>
+      <guid>https://kaiyuewei.me/posts/terraform-aws-timeout/</guid>
+      <description>Root cause analysis</description>
     </item>
     <item>
       <title>Debugging a MongoDB Performance Regression with perf, Flamegraphs, and gdb (4.2.1 vs 4.0.13)</title>

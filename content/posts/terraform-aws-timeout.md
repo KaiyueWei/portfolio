@@ -20,7 +20,6 @@ Terraform shifts infrastructure management away from manual console operations a
 
 ![Fig. 1](/images/terraform-s3/Fig1.png)
 
-*Fig. 1*
 
 ### Provider ecosystem
 
@@ -91,7 +90,6 @@ While S3 lifecycle configuration metadata is replicated across the control plane
 
 ![Fig. 2](/images/terraform-s3/Fig2.png)
 
-*Fig. 2*
 
 #### Problem 1: Stale reads
 
@@ -99,7 +97,6 @@ Immediately after a write, a read request may return old data. This forces a dif
 
 ![Fig. 3](/images/terraform-s3/Fig3.png)
 
-*Fig. 3*
 
 Terraform's Approach: The current S3 waiter implementation relies on a fixed polling interval (a "magic number," typically 5 seconds).
 
@@ -109,7 +106,6 @@ In a distributed system, a single "Success" response is not a guarantee of perma
 
 ![Fig. 4](/images/terraform-s3/Fig4.png)
 
-*Fig. 4*
 
 Terraform's Approach: To mitigate flapping, the waiter implements a "stability check." It does not accept a single success; it requires the success state to be observed consistently across consecutive checks (10 times in a row).
 
@@ -165,7 +161,6 @@ The Data Plane demonstrated Strong Consistency. In 100% of the cases, the GET re
 
 ![Fig. 5](/images/terraform-s3/Fig5.png)
 
-*Fig. 5*
 
 Control Plane (Eventual Consistency)
 
@@ -186,7 +181,6 @@ The Control Plane demonstrated Eventual Consistency.
 
 ![Fig. 6](/images/terraform-s3/Fig6.png)
 
-*Fig. 6*
 
 ### Additional control plane insights
 
@@ -194,13 +188,11 @@ The following charts detail the tail latency and the relationship between API ca
 
 ![Fig. 7](/images/terraform-s3/Fig7.png)
 
-*Fig. 7*
 
 *CDF of propagation time*
 
 ![Fig. 8](/images/terraform-s3/Fig8.png)
 
-*Fig. 8*
 
 ## Conclusion
 
@@ -543,7 +535,6 @@ This gives us comprehensive data across the entire distribution!
 This research demonstrates that **smart polling strategies** can simultaneously improve success rates AND reduce API costs!
 
 ![Fig. 9](/images/terraform-s3/Fig9.png)  
-*Fig. 9*
 
 # References
 

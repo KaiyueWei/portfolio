@@ -153,11 +153,13 @@
     </h2>
   </header>
   <div class="entry-content">
-    <p>Terraform occasionally times out while applying S3 bucket lifecycle configuration (see hashicorp/terraform-provider-aws issue #25939). This write-up explains what’s happening, validates the consistency behavior with small test suites, and outlines polling/waiter strategies that reduce timeouts without hammering APIs.
+    <p>Background What is Terraform Terraform shifts infrastructure management away from manual console operations and toward declarative configuration (HCL, the HashiCorp Configuration Language).
+Management workflow (plan and apply)
+Plan: Terraform compares the desired configuration with the current reality (state) and produces an execution plan (create/modify/delete) for review. Apply: Terraform executes the approved plan to move infrastructure from the current state to the desired state. Provider ecosystem Providers make Terraform flexible: they allow a consistent workflow across different APIs and environments (AWS, GCP, Azure, etc.).
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2025-12-26 00:00:00 -0700 -0700'>December 26, 2025</span></footer>
-  <a class="entry-link" aria-label="post link to Investigating Terraform Timeouts for AWS S3 Lifecycle Configuration" href="https://kaiyuewei.me/posts/terraform_aws_s3_investigation/"></a>
+  <a class="entry-link" aria-label="post link to Investigating Terraform Timeouts for AWS S3 Lifecycle Configuration" href="https://kaiyuewei.me/posts/terraform-aws-timeout/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -191,7 +193,7 @@ Here is how I went from raw assembly to a successful crack using Ghidra and Pyth
     </main>
     
 <footer class="footer">
-        <span>&copy; 2025 <a href="https://kaiyuewei.me/">Kaiyue Wei</a></span> · 
+        <span>&copy; 2026 <a href="https://kaiyuewei.me/">Kaiyue Wei</a></span> · 
 
     <span>
         Powered by

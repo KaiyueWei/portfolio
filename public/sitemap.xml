@@ -2,40 +2,55 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://kaiyuewei.me/categories/aws/</loc>
+    <loc>https://kaiyuewei.me/projects/data-engineering/</loc>
+    <lastmod>2026-01-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://kaiyuewei.me/tags/data-engineering/</loc>
+    <lastmod>2026-01-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://kaiyuewei.me/projects/container-network/</loc>
+    <lastmod>2026-01-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://kaiyuewei.me/tags/docker/</loc>
+    <lastmod>2026-01-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://kaiyuewei.me/tags/docker-compose/</loc>
+    <lastmod>2026-01-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://kaiyuewei.me/</loc>
+    <lastmod>2026-01-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://kaiyuewei.me/tags/networking/</loc>
+    <lastmod>2026-01-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://kaiyuewei.me/tags/postgres/</loc>
+    <lastmod>2026-01-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://kaiyuewei.me/projects/</loc>
+    <lastmod>2026-01-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://kaiyuewei.me/tags/python/</loc>
+    <lastmod>2026-01-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://kaiyuewei.me/tags/</loc>
+    <lastmod>2026-01-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://kaiyuewei.me/categories/aws-s3/</loc>
     <lastmod>2025-12-26T00:00:00-07:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/tags/aws/</loc>
+    <loc>https://kaiyuewei.me/tags/aws-s3/</loc>
     <lastmod>2025-12-26T00:00:00-07:00</lastmod>
   </url><url>
     <loc>https://kaiyuewei.me/categories/</loc>
     <lastmod>2025-12-26T00:00:00-07:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/categories/cloud/</loc>
+    <loc>https://kaiyuewei.me/categories/distributedsystem/</loc>
     <lastmod>2025-12-26T00:00:00-07:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/tags/consistency/</loc>
-    <lastmod>2025-12-26T00:00:00-07:00</lastmod>
-  </url><url>
-    <loc>https://kaiyuewei.me/tags/distributed-systems/</loc>
-    <lastmod>2025-12-26T00:00:00-07:00</lastmod>
-  </url><url>
-    <loc>https://kaiyuewei.me/posts/terraform_aws_s3_investigation/</loc>
-    <lastmod>2025-12-26T00:00:00-07:00</lastmod>
-  </url><url>
-    <loc>https://kaiyuewei.me/</loc>
+    <loc>https://kaiyuewei.me/posts/terraform-aws-timeout/</loc>
     <lastmod>2025-12-26T00:00:00-07:00</lastmod>
   </url><url>
     <loc>https://kaiyuewei.me/posts/</loc>
-    <lastmod>2025-12-26T00:00:00-07:00</lastmod>
-  </url><url>
-    <loc>https://kaiyuewei.me/tags/reliability/</loc>
-    <lastmod>2025-12-26T00:00:00-07:00</lastmod>
-  </url><url>
-    <loc>https://kaiyuewei.me/tags/s3/</loc>
-    <lastmod>2025-12-26T00:00:00-07:00</lastmod>
-  </url><url>
-    <loc>https://kaiyuewei.me/tags/</loc>
     <lastmod>2025-12-26T00:00:00-07:00</lastmod>
   </url><url>
     <loc>https://kaiyuewei.me/categories/terraform/</loc>
@@ -86,15 +101,10 @@
     <loc>https://kaiyuewei.me/tags/ghidra/</loc>
     <lastmod>2025-11-30T00:00:00-07:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/tags/python/</loc>
-    <lastmod>2025-11-30T00:00:00-07:00</lastmod>
-  </url><url>
     <loc>https://kaiyuewei.me/categories/reverse-engineering/</loc>
     <lastmod>2025-11-30T00:00:00-07:00</lastmod>
   </url><url>
     <loc>https://kaiyuewei.me/about/</loc>
-  </url><url>
-    <loc>https://kaiyuewei.me/projects/</loc>
   </url><url>
     <loc>https://kaiyuewei.me/search/</loc>
   </url>
