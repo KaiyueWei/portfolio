@@ -10,9 +10,9 @@
     <atom:link href="https://kaiyuewei.me/tags/networking/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Data Engineering (Part 1): Container Networking</title>
-      <link>https://kaiyuewei.me/projects/container-network/</link>
+      <link>https://kaiyuewei.me/projects/data-engineering/container-network/</link>
       <pubDate>Thu, 01 Jan 2026 00:00:00 +0000</pubDate>
-      <guid>https://kaiyuewei.me/projects/container-network/</guid>
+      <guid>https://kaiyuewei.me/projects/data-engineering/container-network/</guid>
       <description>&lt;p&gt;When you containerize a pipeline, the most common failure isn’t your code — it’s usually how services address each other.&lt;/p&gt;</description>
     </item>
   </channel>

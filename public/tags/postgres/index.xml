@@ -9,17 +9,10 @@
     <lastBuildDate>Thu, 01 Jan 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://kaiyuewei.me/tags/postgres/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Data Engineering</title>
-      <link>https://kaiyuewei.me/projects/data-engineering/</link>
-      <pubDate>Thu, 01 Jan 2026 00:00:00 +0000</pubDate>
-      <guid>https://kaiyuewei.me/projects/data-engineering/</guid>
-      <description>&lt;p&gt;This project documents what I’m building and learning while putting together a local, reproducible data pipeline.&lt;/p&gt;</description>
-    </item>
-    <item>
       <title>Data Engineering (Part 1): Container Networking</title>
-      <link>https://kaiyuewei.me/projects/container-network/</link>
+      <link>https://kaiyuewei.me/projects/data-engineering/container-network/</link>
       <pubDate>Thu, 01 Jan 2026 00:00:00 +0000</pubDate>
-      <guid>https://kaiyuewei.me/projects/container-network/</guid>
+      <guid>https://kaiyuewei.me/projects/data-engineering/container-network/</guid>
       <description>&lt;p&gt;When you containerize a pipeline, the most common failure isn’t your code — it’s usually how services address each other.&lt;/p&gt;</description>
     </item>
   </channel>
