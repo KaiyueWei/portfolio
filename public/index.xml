@@ -2,45 +2,82 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Kaiyue Wei</title>
-    <link>https://kaiyuewei.me/</link>
+    <link>http://localhost:1313/</link>
     <description>Recent content on Kaiyue Wei</description>
-    <generator>Hugo -- 0.148.2</generator>
+    <generator>Hugo -- 0.155.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 01 Jan 2026 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://kaiyuewei.me/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 10 Feb 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Day 1: The Business Problem</title>
+      <link>http://localhost:1313/projects/ride-sharing/day1_business_problem/</link>
+      <pubDate>Tue, 10 Feb 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/projects/ride-sharing/day1_business_problem/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Day 0: Monolithic vs Microservices</title>
+      <link>http://localhost:1313/projects/ride-sharing/day0_microservices/</link>
+      <pubDate>Mon, 09 Feb 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/projects/ride-sharing/day0_microservices/</guid>
+      <description>&lt;h2 id=&#34;references&#34;&gt;References&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://martinfowler.com/bliki/StranglerFigApplication.html&#34;&gt;Strangler Fig&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://microservices.io/patterns/microservices.html&#34;&gt;Microservice Architecture pattern&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;service&#34;&gt;Service&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Micro&lt;/li&gt;
+&lt;li&gt;Autonomous&lt;/li&gt;
+&lt;li&gt;Loosely coupled&lt;/li&gt;
+&lt;li&gt;Context bound&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Coupling&lt;/strong&gt; — describes how much one module relies on other modules.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Cohesion&lt;/strong&gt; — how closely the responsibilities within a single module or component are related.&lt;/p&gt;
+&lt;h2 id=&#34;communication-styles&#34;&gt;Communication Styles&lt;/h2&gt;
+&lt;h3 id=&#34;synchronous-request-response-blocking&#34;&gt;Synchronous Request-Response (blocking)&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;HTTP/REST (GraphQL or standard REST APIs)&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;a ket concept in REST is a resource, which represents a business domain(User, Post, Trip)&lt;/li&gt;
+&lt;li&gt;REST uses the HTTP verbs (GET, POST, PUT, DELETE) for manipulating resouces, which are referenced using a URL&lt;/li&gt;
+&lt;li&gt;No strict contract; loosely defined via documentation&lt;/li&gt;
+&lt;li&gt;text-based (JSON, XML)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Excellent for public-facing APIs and scenerios where interoperabilty and ease of debugging are prioritized.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Data Engineering (Part 1): Container Networking</title>
-      <link>https://kaiyuewei.me/projects/data-engineering/container-network/</link>
+      <link>http://localhost:1313/projects/data-engineering/container-network/</link>
       <pubDate>Thu, 01 Jan 2026 00:00:00 +0000</pubDate>
-      <guid>https://kaiyuewei.me/projects/data-engineering/container-network/</guid>
+      <guid>http://localhost:1313/projects/data-engineering/container-network/</guid>
       <description>&lt;p&gt;When you containerize a pipeline, the most common failure isn’t your code — it’s usually how services address each other.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Investigating Terraform Timeouts for AWS S3 Lifecycle Configuration</title>
-      <link>https://kaiyuewei.me/posts/terraform-aws-timeout/</link>
+      <link>http://localhost:1313/posts/terraform-aws-timeout/</link>
       <pubDate>Fri, 26 Dec 2025 00:00:00 -0700</pubDate>
-      <guid>https://kaiyuewei.me/posts/terraform-aws-timeout/</guid>
+      <guid>http://localhost:1313/posts/terraform-aws-timeout/</guid>
       <description>Root cause analysis</description>
     </item>
     <item>
       <title>Debugging a MongoDB Performance Regression with perf, Flamegraphs, and gdb (4.2.1 vs 4.0.13)</title>
-      <link>https://kaiyuewei.me/posts/mongodb-performance-regression/</link>
+      <link>http://localhost:1313/posts/mongodb-performance-regression/</link>
       <pubDate>Tue, 16 Dec 2025 00:00:00 -0700</pubDate>
-      <guid>https://kaiyuewei.me/posts/mongodb-performance-regression/</guid>
+      <guid>http://localhost:1313/posts/mongodb-performance-regression/</guid>
       <description>A deep dive into debugging a write-heavy performance regression in MongoDB 4.2.1 using perf, flamegraphs, and gdb.</description>
     </item>
     <item>
-      <title>CyberSCI CTF Write-up: Water Treatment (Part 1)</title>
-      <link>https://kaiyuewei.me/posts/cybersci-ctf-writeup/</link>
+      <title>CyberSCI CTF Write-up: Water Treatment</title>
+      <link>http://localhost:1313/posts/cybersci-ctf-writeup/</link>
       <pubDate>Sun, 30 Nov 2025 00:00:00 -0700</pubDate>
-      <guid>https://kaiyuewei.me/posts/cybersci-ctf-writeup/</guid>
+      <guid>http://localhost:1313/posts/cybersci-ctf-writeup/</guid>
       <description>Reverse engineering a legacy 16-bit DOS executable to bypass a custom implementation of the MD2 hash algorithm.</description>
     </item>
     <item>
       <title>About Me</title>
-      <link>https://kaiyuewei.me/about/</link>
+      <link>http://localhost:1313/about/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>https://kaiyuewei.me/about/</guid>
+      <guid>http://localhost:1313/about/</guid>
       <description>&lt;p&gt;Hi, I&amp;rsquo;m &lt;strong&gt;Kaiyue Wei&lt;/strong&gt;.&lt;/p&gt;
 &lt;p&gt;I am a Master&amp;rsquo;s student passionate about &lt;strong&gt;Systems Programming&lt;/strong&gt;, &lt;strong&gt;Operating Systems&lt;/strong&gt;, and &lt;strong&gt;Security&lt;/strong&gt;.&lt;/p&gt;
 &lt;p&gt;I enjoy diving deep into low-level code, performance bug root cause analysis, and building efficient software.&lt;/p&gt;

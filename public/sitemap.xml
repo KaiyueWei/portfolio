@@ -2,110 +2,127 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://kaiyuewei.me/projects/data-engineering/</loc>
+    <loc>http://localhost:1313/projects/ride-sharing/day0_microservices/</loc>
+    <lastmod>2026-02-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/docker/</loc>
+    <lastmod>2026-02-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/go/</loc>
+    <lastmod>2026-02-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/</loc>
+    <lastmod>2026-02-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/kubernetes/</loc>
+    <lastmod>2026-02-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/microservices/</loc>
+    <lastmod>2026-02-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/mongodb/</loc>
+    <lastmod>2026-02-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/projects/</loc>
+    <lastmod>2026-02-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/projects/ride-sharing/</loc>
+    <lastmod>2026-02-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/</loc>
+    <lastmod>2026-02-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/projects/data-engineering/</loc>
     <lastmod>2026-01-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/tags/data-engineering/</loc>
+    <loc>http://localhost:1313/tags/data-engineering/</loc>
     <lastmod>2026-01-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/projects/data-engineering/container-network/</loc>
+    <loc>http://localhost:1313/projects/data-engineering/container-network/</loc>
     <lastmod>2026-01-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/tags/docker/</loc>
+    <loc>http://localhost:1313/tags/docker-compose/</loc>
     <lastmod>2026-01-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/tags/docker-compose/</loc>
+    <loc>http://localhost:1313/tags/networking/</loc>
     <lastmod>2026-01-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/</loc>
+    <loc>http://localhost:1313/tags/postgres/</loc>
     <lastmod>2026-01-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/tags/networking/</loc>
+    <loc>http://localhost:1313/tags/python/</loc>
     <lastmod>2026-01-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/tags/postgres/</loc>
-    <lastmod>2026-01-01T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://kaiyuewei.me/projects/</loc>
-    <lastmod>2026-01-01T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://kaiyuewei.me/tags/python/</loc>
-    <lastmod>2026-01-01T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://kaiyuewei.me/tags/</loc>
-    <lastmod>2026-01-01T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://kaiyuewei.me/categories/aws-s3/</loc>
+    <loc>http://localhost:1313/categories/aws-s3/</loc>
     <lastmod>2025-12-26T00:00:00-07:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/tags/aws-s3/</loc>
+    <loc>http://localhost:1313/tags/aws-s3/</loc>
     <lastmod>2025-12-26T00:00:00-07:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/categories/</loc>
+    <loc>http://localhost:1313/categories/</loc>
     <lastmod>2025-12-26T00:00:00-07:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/categories/distributedsystem/</loc>
+    <loc>http://localhost:1313/categories/distributedsystem/</loc>
     <lastmod>2025-12-26T00:00:00-07:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/posts/terraform-aws-timeout/</loc>
+    <loc>http://localhost:1313/posts/terraform-aws-timeout/</loc>
     <lastmod>2025-12-26T00:00:00-07:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/posts/</loc>
+    <loc>http://localhost:1313/posts/</loc>
     <lastmod>2025-12-26T00:00:00-07:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/categories/terraform/</loc>
+    <loc>http://localhost:1313/categories/terraform/</loc>
     <lastmod>2025-12-26T00:00:00-07:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/tags/terraform/</loc>
+    <loc>http://localhost:1313/tags/terraform/</loc>
     <lastmod>2025-12-26T00:00:00-07:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/categories/database/</loc>
+    <loc>http://localhost:1313/categories/database/</loc>
     <lastmod>2025-12-16T00:00:00-07:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/tags/debugging/</loc>
+    <loc>http://localhost:1313/tags/debugging/</loc>
     <lastmod>2025-12-16T00:00:00-07:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/posts/mongodb-performance-regression/</loc>
+    <loc>http://localhost:1313/posts/mongodb-performance-regression/</loc>
     <lastmod>2025-12-16T00:00:00-07:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/tags/flamegraphs/</loc>
+    <loc>http://localhost:1313/tags/flamegraphs/</loc>
     <lastmod>2025-12-16T00:00:00-07:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/tags/gdb/</loc>
+    <loc>http://localhost:1313/tags/gdb/</loc>
     <lastmod>2025-12-16T00:00:00-07:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/tags/mongodb/</loc>
+    <loc>http://localhost:1313/tags/perf/</loc>
     <lastmod>2025-12-16T00:00:00-07:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/tags/perf/</loc>
+    <loc>http://localhost:1313/categories/performance/</loc>
     <lastmod>2025-12-16T00:00:00-07:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/categories/performance/</loc>
-    <lastmod>2025-12-16T00:00:00-07:00</lastmod>
-  </url><url>
-    <loc>https://kaiyuewei.me/tags/assembly/</loc>
+    <loc>http://localhost:1313/tags/assembly/</loc>
     <lastmod>2025-11-30T00:00:00-07:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/tags/crypto/</loc>
+    <loc>http://localhost:1313/tags/crypto/</loc>
     <lastmod>2025-11-30T00:00:00-07:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/categories/ctf/</loc>
+    <loc>http://localhost:1313/categories/ctf/</loc>
     <lastmod>2025-11-30T00:00:00-07:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/posts/cybersci-ctf-writeup/</loc>
+    <loc>http://localhost:1313/posts/cybersci-ctf-writeup/</loc>
     <lastmod>2025-11-30T00:00:00-07:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/tags/dos/</loc>
+    <loc>http://localhost:1313/tags/dos/</loc>
     <lastmod>2025-11-30T00:00:00-07:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/tags/ghidra/</loc>
+    <loc>http://localhost:1313/tags/ghidra/</loc>
     <lastmod>2025-11-30T00:00:00-07:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/categories/reverse-engineering/</loc>
+    <loc>http://localhost:1313/categories/reverse-engineering/</loc>
     <lastmod>2025-11-30T00:00:00-07:00</lastmod>
   </url><url>
-    <loc>https://kaiyuewei.me/about/</loc>
+    <loc>http://localhost:1313/projects/web-scraper/</loc>
   </url><url>
-    <loc>https://kaiyuewei.me/search/</loc>
+    <loc>http://localhost:1313/about/</loc>
+  </url><url>
+    <loc>http://localhost:1313/search/</loc>
   </url>
 </urlset>

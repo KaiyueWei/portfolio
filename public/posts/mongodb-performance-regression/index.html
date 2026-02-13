@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="en" dir="auto">
 
-<head><meta charset="utf-8">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="index, follow">
+<meta name="robots" content="noindex, nofollow">
 <title>Debugging a MongoDB Performance Regression with perf, Flamegraphs, and gdb (4.2.1 vs 4.0.13) | Kaiyue Wei</title>
 <meta name="keywords" content="MongoDB, Debugging, perf, gdb, Flamegraphs">
 <meta name="description" content="A deep dive into debugging a write-heavy performance regression in MongoDB 4.2.1 using perf, flamegraphs, and gdb.">
 <meta name="author" content="">
-<link rel="canonical" href="https://kaiyuewei.me/posts/mongodb-performance-regression/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.8fe10233a706bc87f2e08b3cf97b8bd4c0a80f10675a143675d59212121037c0.css" integrity="sha256-j&#43;ECM6cGvIfy4Is8&#43;XuL1MCoDxBnWhQ2ddWSEhIQN8A=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://kaiyuewei.me/assets/favicon.png">
-<link rel="icon" type="image/png" sizes="16x16" href="https://kaiyuewei.me/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://kaiyuewei.me/favicon-32x32.png">
-<link rel="apple-touch-icon" href="https://kaiyuewei.me/apple-touch-icon.png">
-<link rel="mask-icon" href="https://kaiyuewei.me/safari-pinned-tab.svg">
+<link rel="canonical" href="http://localhost:1313/posts/mongodb-performance-regression/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.2211ca3164be7830024f6aad2b3a2e520843a64f8f048445c3401c1249aa051d.css" integrity="sha256-IhHKMWS&#43;eDACT2qtKzouUghDpk&#43;PBIRFw0AcEkmqBR0=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/assets/favicon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="https://kaiyuewei.me/posts/mongodb-performance-regression/">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/mongodb-performance-regression/">
 <noscript>
     <style>
         #theme-toggle,
@@ -55,74 +55,7 @@
         }
 
     </style>
-</noscript><meta property="og:url" content="https://kaiyuewei.me/posts/mongodb-performance-regression/">
-  <meta property="og:site_name" content="Kaiyue Wei">
-  <meta property="og:title" content="Debugging a MongoDB Performance Regression with perf, Flamegraphs, and gdb (4.2.1 vs 4.0.13)">
-  <meta property="og:description" content="A deep dive into debugging a write-heavy performance regression in MongoDB 4.2.1 using perf, flamegraphs, and gdb.">
-  <meta property="og:locale" content="en-us">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2025-12-16T00:00:00-07:00">
-    <meta property="article:modified_time" content="2025-12-16T00:00:00-07:00">
-    <meta property="article:tag" content="MongoDB">
-    <meta property="article:tag" content="Debugging">
-    <meta property="article:tag" content="Perf">
-    <meta property="article:tag" content="Gdb">
-    <meta property="article:tag" content="Flamegraphs">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Debugging a MongoDB Performance Regression with perf, Flamegraphs, and gdb (4.2.1 vs 4.0.13)">
-<meta name="twitter:description" content="A deep dive into debugging a write-heavy performance regression in MongoDB 4.2.1 using perf, flamegraphs, and gdb.">
-
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position":  1 ,
-      "name": "Posts",
-      "item": "https://kaiyuewei.me/posts/"
-    }, 
-    {
-      "@type": "ListItem",
-      "position":  2 ,
-      "name": "Debugging a MongoDB Performance Regression with perf, Flamegraphs, and gdb (4.2.1 vs 4.0.13)",
-      "item": "https://kaiyuewei.me/posts/mongodb-performance-regression/"
-    }
-  ]
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "Debugging a MongoDB Performance Regression with perf, Flamegraphs, and gdb (4.2.1 vs 4.0.13)",
-  "name": "Debugging a MongoDB Performance Regression with perf, Flamegraphs, and gdb (4.2.1 vs 4.0.13)",
-  "description": "A deep dive into debugging a write-heavy performance regression in MongoDB 4.2.1 using perf, flamegraphs, and gdb.",
-  "keywords": [
-    "MongoDB", "Debugging", "perf", "gdb", "Flamegraphs"
-  ],
-  "articleBody": "I recently chased down a write-heavy performance regression that showed up when running the same workload on MongoDB 4.2.1 versus MongoDB 4.0.13. The punchline: the “slow” version spent a surprising amount of CPU time rebuilding WiredTiger row-store keys during eviction-driven reconciliation. With a targeted fix to key handling, the regression disappeared.\nThis post walks through the debugging approach end-to-end: how I reproduced the issue, what the flamegraphs revealed, how I used gdb to confirm the execution path, and why the root cause points to a specific key-buffer reset.\nTL;DR The workload (many secondary indexes + concurrent updates) creates heavy eviction/reconciliation pressure in WiredTiger. In MongoDB 4.2.1, CPU time shifts dramatically into: __wt_row_leaf_key_copy __wt_row_leaf_key_work In MongoDB 4.0.13, that cost is essentially absent; the equivalent “key work” shows up elsewhere (e.g. __rec_cell_build_leaf_key) and is much cheaper overall. Evidence from stack traces and conditional breakpoints shows the key-copy path is hit repeatedly across threads during eviction/reconcile. The likely culprit: an incorrect reset of key-\u003esize in __wt_row_leaf_key_work, invalidating cached decompressed keys and forcing repeated key reconstruction. The Setup I reproduced this in a clean environment (AWS EC2, Ubuntu 20.04), with the key goal being: make both versions run the same workload shape, then profile only the “interesting” phase.\nThe workload has three phases:\nStart a clean mongod with a fixed WiredTiger cache size. Insert phase Create many compound secondary indexes across 5 collections. Bulk insert 1M documents per collection using 5 concurrent threads. Update phase (the trigger) Run 5 concurrent threads, each repeatedly calling updateMany with an _id modulo predicate: query: { _id: { $mod: [100, i] } } update: { $inc: { a: 1 } } This shape matters: lots of secondary indexes amplify per-update work, and concurrency increases dirty-page production—together pushing WiredTiger into frequent eviction and reconciliation.\nReproducing “Fast” vs “Slow” I ran the same script against two builds by switching MONGO_HOME.\nFast run (MongoDB 4.0.13):\nexport MONGO_HOME=\"$HOME/work/mongo-4.0.13\" bash ./repro/repro_perf_v3.sh Slow run (MongoDB 4.2.1):\nexport MONGO_HOME=\"$HOME/work/mongo-4.2.1\" bash ./repro/repro_perf_v3.sh The script profiles the server process during the update phase using perf, then generates a flamegraph. The output artifacts are:\nresults/flamegraph_mongo-4.0.13.svg results/flamegraph_mongo-4.2.1.svg First Clue: Flamegraph Deltas Flamegraphs are great for answering one question quickly: where did the CPU time go?\nWhat “slow” looks like (4.2.1) The slow run is dominated by WiredTiger eviction and reconciliation, and—critically—by row-store key copying/materialization:\n__wt_evict_thread_run dominates sampled execution (eviction thread work). Within reconciliation: __wt_reconcile and __wt_rec_row_leaf are major contributors. Row-key handling is extremely hot: __wt_row_leaf_key_copy is a top contributor (~23% in my capture). __wt_row_leaf_key_work is also a top contributor (~22%). At this point, the story becomes: “eviction/reconciliation is expected under write pressure, but why are we spending so much time copying keys?”\nWhat “fast” looks like (4.0.13) The fast run still spends time in eviction/reconcile (not surprising), but does not burn CPU in __wt_row_leaf_key_copy:\n__wt_row_leaf_key_copy is negligible (~0.08%). Key work shows up instead as __rec_cell_build_leaf_key (noticeable, but not pathological). That difference is the smoking gun: the regression isn’t “MongoDB updates are slower in general”—it’s that 4.2.1 takes a substantially more expensive key path inside WiredTiger reconciliation.\nTurning Samples into an Execution Path Flamegraphs tell you what is hot, but not always why it’s hot. To tie the hotspot to a real request path, I used gdb and captured stack traces during the update phase.\nA representative call chain from the debug session shows the hotspot sits directly on the update commit path:\nMongoDB update execution: mongo::performUpdates mongo::UpdateStage::transformAndUpdate mongo::WiredTigerRecoveryUnit::_txnClose / commitUnitOfWork WiredTiger commit + eviction/reconcile: __wt_txn_commit __wt_cache_eviction_worker __wt_evict / __evict_page __wt_reconcile / __wt_rec_row_leaf __wt_row_leaf_key_copy This mattered because it ruled out a bunch of red herrings (client-side overhead, query parsing, planner differences, etc.). The slowdown is firmly inside “commit triggers eviction, eviction triggers reconcile, reconcile does expensive key work.”\nConfirming It’s Not a One-Off: Conditional Breakpoints To test whether the key-copying path was rare or pervasive, I set a conditional breakpoint on __wt_row_leaf_key_copy that only triggers when the destination key buffer is empty:\nstop only if key-\u003esize==0 \u0026\u0026 key-\u003edata==0 This breakpoint hit repeatedly, across different threads (foreground mongod threads and background threads). That was important evidence that the system is frequently reaching a state where it has to instantiate/copy keys from scratch, rather than reusing an existing representation.\nIn other words: not a single pathological page, but a systemic behavior under this workload.\nWhat’s Actually Happening (Interpretation) Here’s the high-level mechanism that fits all the evidence:\nThe update workload creates a large amount of dirty data quickly (secondary indexes amplify it). WiredTiger starts evicting pages aggressively to keep cache under control. Eviction requires reconciliation: turning in-memory state into on-disk page images. During reconciliation of row-store leaf pages, WiredTiger needs access to keys. In 4.2.1, reconciliation frequently takes a path that materializes and copies row keys (__wt_row_leaf_key_work → __wt_row_leaf_key_copy) far more often than in 4.0.13. That additional key work becomes the dominant CPU cost, slowing eviction progress—and because eviction is on the critical path for commits under pressure, overall throughput collapses. Root Cause (Evidence-Based Hypothesis) The regression in 4.2.1 appears to be caused by an incorrect reset of key-\u003esize in __wt_row_leaf_key_work, which invalidates cached decompressed keys. Once invalidated, WiredTiger has to rebuild full keys repeatedly during eviction/reconciliation, which matches:\nthe flamegraph shift (__wt_row_leaf_key_copy/__wt_row_leaf_key_work becoming top hotspots), the stack traces showing the path is eviction→reconcile during update commits, and the conditional breakpoint repeatedly catching key-\u003esize==0 \u0026\u0026 key-\u003edata==0. The fix Remove the incorrect reset so cached decompressed keys remain reusable; this restores key reuse and eliminates the extra key reconstruction work during eviction.\nLessons Learned / Debugging Checklist A few takeaways I’d reuse for the next performance regression:\nProfile the smallest “interesting” phase. I only profiled the update phase; the insert phase just sets up pressure. Compare flamegraphs across versions. The delta often points straight at the subsystem that changed. Use gdb to connect hotspots to real request paths. It’s the fastest way to avoid guessing. Conditional breakpoints are underrated. They can tell you whether a suspicious state is rare or happening constantly under load. Eviction costs can become user-visible. Under high write pressure, eviction/reconcile work is often on the critical path for commit latency and throughput. Artifacts / Repro Notes The full reproduction scripts and logs are available here: KaiyueWei/mongo-server-44991.\nIf you want to reproduce the same analysis style, these are the core artifacts I generated:\nresults/flamegraph_mongo-4.0.13.svg results/flamegraph_mongo-4.2.1.svg gdb.log (stack traces + conditional breakpoint hits) repro/repro_perf_v3.sh (workload + perf profiling automation) ",
-  "wordCount" : "1058",
-  "inLanguage": "en",
-  "datePublished": "2025-12-16T00:00:00-07:00",
-  "dateModified": "2025-12-16T00:00:00-07:00",
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "https://kaiyuewei.me/posts/mongodb-performance-regression/"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "Kaiyue Wei",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://kaiyuewei.me/assets/favicon.png"
-    }
-  }
-}
-</script>
+</noscript>
 </head>
 
 <body class="" id="top">
@@ -140,7 +73,7 @@
 <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="https://kaiyuewei.me/" accesskey="h" title="Kaiyue Wei (Alt + H)">Kaiyue Wei</a>
+            <a href="http://localhost:1313/" accesskey="h" title="Kaiyue Wei (Alt + H)">Kaiyue Wei</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -166,17 +99,17 @@
         </div>
         <ul id="menu">
             <li>
-                <a href="https://kaiyuewei.me/about/" title="about">
+                <a href="http://localhost:1313/about/" title="about">
                     <span>about</span>
                 </a>
             </li>
             <li>
-                <a href="https://kaiyuewei.me/tags/" title="tags">
+                <a href="http://localhost:1313/tags/" title="tags">
                     <span>tags</span>
                 </a>
             </li>
             <li>
-                <a href="https://kaiyuewei.me/search/" title="search (Alt &#43; /)" accesskey=/>
+                <a href="http://localhost:1313/search/" title="search (Alt &#43; /)" accesskey=/>
                     <span>search</span>
                 </a>
             </li>
@@ -227,7 +160,7 @@
 <li><strong>Update phase (the trigger)</strong>
 <ul>
 <li>Run 5 concurrent threads, each repeatedly calling <code>updateMany</code> with an <code>_id</code> modulo predicate:
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#a6e22e">query</span><span style="color:#f92672">:</span> { <span style="color:#a6e22e">_id</span><span style="color:#f92672">:</span> { <span style="color:#a6e22e">$mod</span><span style="color:#f92672">:</span> [<span style="color:#ae81ff">100</span>, <span style="color:#a6e22e">i</span>] } }
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#a6e22e">query</span><span style="color:#f92672">:</span> { <span style="color:#a6e22e">_id</span><span style="color:#f92672">:</span> { <span style="color:#a6e22e">$mod</span><span style="color:#f92672">:</span> [<span style="color:#ae81ff">100</span>, <span style="color:#a6e22e">i</span>] } }
 </span></span><span style="display:flex;"><span><span style="color:#a6e22e">update</span><span style="color:#f92672">:</span> { <span style="color:#a6e22e">$inc</span><span style="color:#f92672">:</span> { <span style="color:#a6e22e">a</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span> } }
 </span></span></code></pre></div></li>
 </ul>
@@ -237,10 +170,10 @@
 <h2 id="reproducing-fast-vs-slow">Reproducing “Fast” vs “Slow”<a hidden class="anchor" aria-hidden="true" href="#reproducing-fast-vs-slow">#</a></h2>
 <p>I ran the same script against two builds by switching <code>MONGO_HOME</code>.</p>
 <p><strong>Fast run (MongoDB 4.0.13):</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>export MONGO_HOME<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$HOME<span style="color:#e6db74">/work/mongo-4.0.13&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>export MONGO_HOME<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$HOME<span style="color:#e6db74">/work/mongo-4.0.13&#34;</span>
 </span></span><span style="display:flex;"><span>bash ./repro/repro_perf_v3.sh
 </span></span></code></pre></div><p><strong>Slow run (MongoDB 4.2.1):</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>export MONGO_HOME<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$HOME<span style="color:#e6db74">/work/mongo-4.2.1&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>export MONGO_HOME<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$HOME<span style="color:#e6db74">/work/mongo-4.2.1&#34;</span>
 </span></span><span style="display:flex;"><span>bash ./repro/repro_perf_v3.sh
 </span></span></code></pre></div><p>The script profiles the server process during the update phase using <code>perf</code>, then generates a flamegraph. The output artifacts are:</p>
 <ul>
@@ -278,7 +211,7 @@
 <h2 id="turning-samples-into-an-execution-path">Turning Samples into an Execution Path<a hidden class="anchor" aria-hidden="true" href="#turning-samples-into-an-execution-path">#</a></h2>
 <p>Flamegraphs tell you what is hot, but not always why it’s hot. To tie the hotspot to a real request path, I used <code>gdb</code> and captured stack traces during the update phase.</p>
 <p>A representative call chain from the debug session shows the hotspot sits directly on the update commit path:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>MongoDB update execution:
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>MongoDB update execution:
 </span></span><span style="display:flex;"><span>  mongo::performUpdates
 </span></span><span style="display:flex;"><span>  mongo::UpdateStage::transformAndUpdate
 </span></span><span style="display:flex;"><span>  mongo::WiredTigerRecoveryUnit::_txnClose / commitUnitOfWork
@@ -338,18 +271,18 @@
 
   <footer class="post-footer">
     <ul class="post-tags">
-      <li><a href="https://kaiyuewei.me/tags/mongodb/">MongoDB</a></li>
-      <li><a href="https://kaiyuewei.me/tags/debugging/">Debugging</a></li>
-      <li><a href="https://kaiyuewei.me/tags/perf/">Perf</a></li>
-      <li><a href="https://kaiyuewei.me/tags/gdb/">Gdb</a></li>
-      <li><a href="https://kaiyuewei.me/tags/flamegraphs/">Flamegraphs</a></li>
+      <li><a href="http://localhost:1313/tags/mongodb/">MongoDB</a></li>
+      <li><a href="http://localhost:1313/tags/debugging/">Debugging</a></li>
+      <li><a href="http://localhost:1313/tags/perf/">Perf</a></li>
+      <li><a href="http://localhost:1313/tags/gdb/">Gdb</a></li>
+      <li><a href="http://localhost:1313/tags/flamegraphs/">Flamegraphs</a></li>
     </ul>
   </footer>
 </article>
     </main>
     
 <footer class="footer">
-        <span>&copy; 2026 <a href="https://kaiyuewei.me/">Kaiyue Wei</a></span> · 
+        <span>&copy; 2026 <a href="http://localhost:1313/">Kaiyue Wei</a></span> · 
 
     <span>
         Powered by

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Ride Sharing on Kaiyue Wei</title>
+    <link>http://localhost:1313/projects/ride-sharing/</link>
+    <description>Recent content in Ride Sharing on Kaiyue Wei</description>
+    <generator>Hugo -- 0.155.2</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 10 Feb 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/projects/ride-sharing/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Day 1: The Business Problem</title>
+      <link>http://localhost:1313/projects/ride-sharing/day1_business_problem/</link>
+      <pubDate>Tue, 10 Feb 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/projects/ride-sharing/day1_business_problem/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Day 0: Monolithic vs Microservices</title>
+      <link>http://localhost:1313/projects/ride-sharing/day0_microservices/</link>
+      <pubDate>Mon, 09 Feb 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/projects/ride-sharing/day0_microservices/</guid>
+      <description>&lt;h2 id=&#34;references&#34;&gt;References&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://martinfowler.com/bliki/StranglerFigApplication.html&#34;&gt;Strangler Fig&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://microservices.io/patterns/microservices.html&#34;&gt;Microservice Architecture pattern&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;service&#34;&gt;Service&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Micro&lt;/li&gt;
+&lt;li&gt;Autonomous&lt;/li&gt;
+&lt;li&gt;Loosely coupled&lt;/li&gt;
+&lt;li&gt;Context bound&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Coupling&lt;/strong&gt; — describes how much one module relies on other modules.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Cohesion&lt;/strong&gt; — how closely the responsibilities within a single module or component are related.&lt;/p&gt;
+&lt;h2 id=&#34;communication-styles&#34;&gt;Communication Styles&lt;/h2&gt;
+&lt;h3 id=&#34;synchronous-request-response-blocking&#34;&gt;Synchronous Request-Response (blocking)&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;HTTP/REST (GraphQL or standard REST APIs)&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;a ket concept in REST is a resource, which represents a business domain(User, Post, Trip)&lt;/li&gt;
+&lt;li&gt;REST uses the HTTP verbs (GET, POST, PUT, DELETE) for manipulating resouces, which are referenced using a URL&lt;/li&gt;
+&lt;li&gt;No strict contract; loosely defined via documentation&lt;/li&gt;
+&lt;li&gt;text-based (JSON, XML)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Excellent for public-facing APIs and scenerios where interoperabilty and ease of debugging are prioritized.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
