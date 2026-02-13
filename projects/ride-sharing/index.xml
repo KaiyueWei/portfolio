@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Ride Sharing on Kaiyue Wei</title><link>https://kaiyuewei.me/projects/ride-sharing/</link><description>Recent content in Ride Sharing on Kaiyue Wei</description><generator>Hugo -- 0.147.9</generator><language>en-us</language><lastBuildDate>Wed, 11 Feb 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://kaiyuewei.me/projects/ride-sharing/index.xml" rel="self" type="application/rss+xml"/><item><title>Day 2: Error Handling in Go</title><link>https://kaiyuewei.me/projects/ride-sharing/day2_error_handling/</link><pubDate>Wed, 11 Feb 2026 00:00:00 +0000</pubDate><guid>https://kaiyuewei.me/projects/ride-sharing/day2_error_handling/</guid><description>&lt;p>In Go, errors are &lt;strong>values&lt;/strong>, not exceptions. There is no &lt;code>try/catch&lt;/code> — instead, functions return an &lt;code>error&lt;/code> as part of their return values, and the caller is responsible for checking it. This makes error handling explicit and forces you to think about failure paths at every step.&lt;/p>
+&lt;h2 id="the-error-interface">The &lt;code>error&lt;/code> Interface&lt;/h2>
+&lt;p>At its core, Go&amp;rsquo;s &lt;code>error&lt;/code> type is just an interface:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-go" data-lang="go">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">type&lt;/span> &lt;span style="color:#66d9ef">error&lt;/span> &lt;span style="color:#66d9ef">interface&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">Error&lt;/span>() &lt;span style="color:#66d9ef">string&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Any type that implements the &lt;code>Error() string&lt;/code> method satisfies this interface. The built-in &lt;code>errors.New()&lt;/code> and &lt;code>fmt.Errorf()&lt;/code> are the most common ways to create errors.&lt;/p></description></item><item><title>Day 1: The Business Problem</title><link>https://kaiyuewei.me/projects/ride-sharing/day1_business_problem/</link><pubDate>Tue, 10 Feb 2026 00:00:00 +0000</pubDate><guid>https://kaiyuewei.me/projects/ride-sharing/day1_business_problem/</guid><description/></item><item><title>Day 0: Monolithic vs Microservices</title><link>https://kaiyuewei.me/projects/ride-sharing/day0_microservices/</link><pubDate>Mon, 09 Feb 2026 00:00:00 +0000</pubDate><guid>https://kaiyuewei.me/projects/ride-sharing/day0_microservices/</guid><description>&lt;h2 id="references">References&lt;/h2>
+&lt;ul>
+&lt;li>&lt;a href="https://martinfowler.com/bliki/StranglerFigApplication.html">Strangler Fig&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://microservices.io/patterns/microservices.html">Microservice Architecture pattern&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="service">Service&lt;/h2>
+&lt;ul>
+&lt;li>Micro&lt;/li>
+&lt;li>Autonomous&lt;/li>
+&lt;li>Loosely coupled&lt;/li>
+&lt;li>Context bound&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>Coupling&lt;/strong> — describes how much one module relies on other modules.&lt;/p>
+&lt;p>&lt;strong>Cohesion&lt;/strong> — how closely the responsibilities within a single module or component are related.&lt;/p>
+&lt;h2 id="communication-styles">Communication Styles&lt;/h2>
+&lt;h3 id="synchronous-request-response-blocking">Synchronous Request-Response (blocking)&lt;/h3>
+&lt;p>&lt;strong>HTTP/REST (GraphQL or standard REST APIs)&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>a ket concept in REST is a resource, which represents a business domain(User, Post, Trip)&lt;/li>
+&lt;li>REST uses the HTTP verbs (GET, POST, PUT, DELETE) for manipulating resouces, which are referenced using a URL&lt;/li>
+&lt;li>No strict contract; loosely defined via documentation&lt;/li>
+&lt;li>text-based (JSON, XML)&lt;/li>
+&lt;/ul>
+&lt;p>Excellent for public-facing APIs and scenerios where interoperabilty and ease of debugging are prioritized.&lt;/p></description></item></channel></rss>
