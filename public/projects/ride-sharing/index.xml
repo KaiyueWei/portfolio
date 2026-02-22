@@ -6,14 +6,60 @@
     <description>Recent content in Ride Sharing on Kaiyue Wei</description>
     <generator>Hugo -- 0.155.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 10 Feb 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 12 Feb 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/projects/ride-sharing/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Day 3: Scaffolding the Trip Service</title>
+      <link>http://localhost:1313/projects/ride-sharing/day3_trip_service/</link>
+      <pubDate>Thu, 12 Feb 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/projects/ride-sharing/day3_trip_service/</guid>
+      <description>&lt;p&gt;With the architecture designed in Day 1 and Go error patterns from Day 2, it&amp;rsquo;s time to build the first real service. The Trip Service is the heart of the platform — it owns the trip lifecycle. I started by scaffolding it using the generator tool:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;go run tools/create_service.go -name trip
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This gives us the Clean Architecture layout from Day 1:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;services/trip-service/
+├── cmd/                        # Application entry point
+├── internal/
+│   ├── domain/                # Business domain models and interfaces
+│   │   └── trip.go
+│   ├── service/               # Business logic implementation
+│   │   └── service.go
+│   └── infrastructure/        # External dependency implementations
+│       ├── events/            # Event handling (RabbitMQ)
+│       ├── grpc/              # gRPC server handlers
+│       └── repository/        # Data persistence
+├── pkg/
+│   └── types/                 # Shared types and models
+└── README.md
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;domain-layer&#34;&gt;Domain Layer&lt;/h2&gt;
+&lt;p&gt;The domain layer defines the core models and interfaces — no implementation details, no imports from infrastructure packages.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Day 2: Error Handling in Go</title>
+      <link>http://localhost:1313/projects/ride-sharing/day2_error_handling/</link>
+      <pubDate>Wed, 11 Feb 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/projects/ride-sharing/day2_error_handling/</guid>
+      <description>&lt;p&gt;In Go, errors are &lt;strong&gt;values&lt;/strong&gt;, not exceptions. There is no &lt;code&gt;try/catch&lt;/code&gt; — instead, functions return an &lt;code&gt;error&lt;/code&gt; as part of their return values, and the caller is responsible for checking it. This makes error handling explicit and forces you to think about failure paths at every step.&lt;/p&gt;
+&lt;h2 id=&#34;the-error-interface&#34;&gt;The &lt;code&gt;error&lt;/code&gt; Interface&lt;/h2&gt;
+&lt;p&gt;At its core, Go&amp;rsquo;s &lt;code&gt;error&lt;/code&gt; type is just an interface:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;type&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;error&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;interface&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#a6e22e&#34;&gt;Error&lt;/span&gt;() &lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Any type that implements the &lt;code&gt;Error() string&lt;/code&gt; method satisfies this interface. The built-in &lt;code&gt;errors.New()&lt;/code&gt; and &lt;code&gt;fmt.Errorf()&lt;/code&gt; are the most common ways to create errors.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Day 1: The Business Problem</title>
       <link>http://localhost:1313/projects/ride-sharing/day1_business_problem/</link>
       <pubDate>Tue, 10 Feb 2026 00:00:00 +0000</pubDate>
       <guid>http://localhost:1313/projects/ride-sharing/day1_business_problem/</guid>
-      <description></description>
+      <description>&lt;p&gt;After exploring the theory behind microservices in Day 0, it&amp;rsquo;s time to define what we&amp;rsquo;re actually building and why.&lt;/p&gt;
+&lt;h2 id=&#34;what-are-we-building&#34;&gt;What Are We Building?&lt;/h2&gt;
+&lt;p&gt;A ride-sharing platform — think Uber or Lyft. At its core, the problem is simple: &lt;strong&gt;a rider wants to go somewhere, and a driver can take them there&lt;/strong&gt;. But the real complexity comes from making this work in real time.&lt;/p&gt;
+&lt;p&gt;The key user flows are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Rider&lt;/strong&gt;: pick a location on a map, preview the trip/fare, request a ride, get matched with a driver, and pay&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Driver&lt;/strong&gt;: register with a car package, see incoming trip requests, accept or decline, and navigate to the rider&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;What makes this interesting from a systems perspective is that nearly every interaction is &lt;strong&gt;time-sensitive and event-driven&lt;/strong&gt;. When a rider requests a trip, we need to notify available drivers &lt;em&gt;immediately&lt;/em&gt;. When a driver accepts, the rider needs to know &lt;em&gt;right away&lt;/em&gt;. Polling or REST request-response alone won&amp;rsquo;t cut it.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Day 0: Monolithic vs Microservices</title>

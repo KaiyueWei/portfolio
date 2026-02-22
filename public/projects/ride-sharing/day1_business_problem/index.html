@@ -7,7 +7,15 @@
 <meta name="robots" content="noindex, nofollow">
 <title>Day 1: The Business Problem | Kaiyue Wei</title>
 <meta name="keywords" content="">
-<meta name="description" content="Day 1: The Business Problem - Kaiyue Wei">
+<meta name="description" content="After exploring the theory behind microservices in Day 0, it&rsquo;s time to define what we&rsquo;re actually building and why.
+What Are We Building?
+A ride-sharing platform — think Uber or Lyft. At its core, the problem is simple: a rider wants to go somewhere, and a driver can take them there. But the real complexity comes from making this work in real time.
+The key user flows are:
+
+Rider: pick a location on a map, preview the trip/fare, request a ride, get matched with a driver, and pay
+Driver: register with a car package, see incoming trip requests, accept or decline, and navigate to the rider
+
+What makes this interesting from a systems perspective is that nearly every interaction is time-sensitive and event-driven. When a rider requests a trip, we need to notify available drivers immediately. When a driver accepts, the rider needs to know right away. Polling or REST request-response alone won&rsquo;t cut it.">
 <meta name="author" content="">
 <link rel="canonical" href="http://localhost:1313/projects/ride-sharing/day1_business_problem/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.2211ca3164be7830024f6aad2b3a2e520843a64f8f048445c3401c1249aa051d.css" integrity="sha256-IhHKMWS&#43;eDACT2qtKzouUghDpk&#43;PBIRFw0AcEkmqBR0=" rel="preload stylesheet" as="style">
@@ -128,6 +136,82 @@
 
 </div>
   </header> 
+  <div class="post-content"><p>After exploring the theory behind microservices in Day 0, it&rsquo;s time to define what we&rsquo;re actually building and why.</p>
+<h2 id="what-are-we-building">What Are We Building?<a hidden class="anchor" aria-hidden="true" href="#what-are-we-building">#</a></h2>
+<p>A ride-sharing platform — think Uber or Lyft. At its core, the problem is simple: <strong>a rider wants to go somewhere, and a driver can take them there</strong>. But the real complexity comes from making this work in real time.</p>
+<p>The key user flows are:</p>
+<ul>
+<li><strong>Rider</strong>: pick a location on a map, preview the trip/fare, request a ride, get matched with a driver, and pay</li>
+<li><strong>Driver</strong>: register with a car package, see incoming trip requests, accept or decline, and navigate to the rider</li>
+</ul>
+<p>What makes this interesting from a systems perspective is that nearly every interaction is <strong>time-sensitive and event-driven</strong>. When a rider requests a trip, we need to notify available drivers <em>immediately</em>. When a driver accepts, the rider needs to know <em>right away</em>. Polling or REST request-response alone won&rsquo;t cut it.</p>
+<h2 id="why-microservices">Why Microservices?<a hidden class="anchor" aria-hidden="true" href="#why-microservices">#</a></h2>
+<p>This project is a natural fit for microservices because the domain breaks cleanly into independent responsibilities:</p>
+<ul>
+<li><strong>Trip Service</strong> — manages the trip lifecycle (creation, driver assignment, completion)</li>
+<li><strong>Driver Service</strong> — handles driver registration, availability, and location tracking</li>
+<li><strong>Payment Service</strong> — processes payments via Stripe</li>
+<li><strong>API Gateway</strong> — the single entry point that bridges HTTP/WebSocket clients to the backend</li>
+</ul>
+<p>Each of these can be developed, deployed, and scaled independently. The Trip Service doesn&rsquo;t need to know how payments work — it just emits a <code>trip.event.completed</code> event, and the Payment Service reacts to it.</p>
+<p>This is the hybrid approach from Day 0 in action: the API Gateway handles synchronous HTTP requests from the frontend, while backend services communicate asynchronously through RabbitMQ.</p>
+<h2 id="choosing-the-communication-pattern">Choosing the Communication Pattern<a hidden class="anchor" aria-hidden="true" href="#choosing-the-communication-pattern">#</a></h2>
+<p>From what I covered in Day 0, the hybrid approach made the most sense here:</p>
+<ol>
+<li><strong>Client-to-Gateway</strong>: Synchronous HTTP for things like creating a trip or fetching driver info, plus <strong>WebSockets</strong> for real-time updates (driver location, trip status changes)</li>
+<li><strong>Service-to-Service</strong>: Asynchronous messaging via <strong>RabbitMQ</strong> using a topic exchange</li>
+</ol>
+<p>I settled on a routing key convention to keep things organized:</p>
+<table>
+  <thead>
+      <tr>
+          <th>Pattern</th>
+          <th>Description</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>trip.event.*</code></td>
+          <td>Trip lifecycle events (created, driver_assigned, no_drivers_found)</td>
+      </tr>
+      <tr>
+          <td><code>driver.cmd.*</code></td>
+          <td>Driver commands (trip_request, trip_accept, trip_decline, location)</td>
+      </tr>
+      <tr>
+          <td><code>payment.event.*</code></td>
+          <td>Payment events (session_created, success, failed, cancelled)</td>
+      </tr>
+      <tr>
+          <td><code>payment.cmd.*</code></td>
+          <td>Payment commands (create_session)</td>
+      </tr>
+  </tbody>
+</table>
+<p>The distinction between <code>event</code> and <code>cmd</code> is intentional — <strong>events</strong> describe something that happened (past tense, broadcast), while <strong>commands</strong> request an action (imperative, targeted). This keeps the message flow predictable.</p>
+<h2 id="structuring-the-services">Structuring the Services<a hidden class="anchor" aria-hidden="true" href="#structuring-the-services">#</a></h2>
+<p>One thing I wanted to get right early was the internal structure of each service. I went with <strong>Clean Architecture</strong>, where each service follows this layout:</p>
+<pre tabindex="0"><code>services/&lt;name&gt;-service/
+├── cmd/                        # Entry point
+├── internal/
+│   ├── domain/                # Interfaces &amp; business models
+│   ├── service/               # Business logic
+│   └── infrastructure/        # Adapters (events, gRPC, repository)
+└── pkg/types/                 # Public types
+</code></pre><p>The key idea: <strong>domain logic has zero dependencies on infrastructure</strong>. The domain layer defines interfaces (e.g., <code>TripRepository</code>), and the infrastructure layer provides concrete implementations (e.g., a MongoDB adapter). This makes it easy to swap out a database or message broker without touching business logic.</p>
+<p>I also built a small scaffolding tool (<code>go run tools/create_service.go -name &lt;service&gt;</code>) so spinning up a new service with this structure takes seconds instead of manually creating directories and boilerplate.</p>
+<h2 id="the-trip-scheduling-flow">The Trip Scheduling Flow<a hidden class="anchor" aria-hidden="true" href="#the-trip-scheduling-flow">#</a></h2>
+<p>Here&rsquo;s the full flow I designed for trip scheduling — from the rider requesting a ride to a driver being assigned:</p>
+<p><a href="https://mermaid.live/edit#pako:eNqNVt9v2jAQ_lcsP21qGvGjZSEPlSpaTX1YxWDVpAmpMvZBIkicOQ6UVf3fd4mdEgcKzQOK47v7vjt_d-aVcimAhnSW5vC3gJTDXcyWiiWzlOCTMaVjHmcs1eQpB3X49Xb88J1p2LJd4d4vFWdTUJuYw-HmnYo3oM5sH34fs10Cqf7Qb6oRFL-bnZLz5c3NnmRIRgrwteJGJmXOuTa2eyP0aFAPyXIyHtWO5YaxN7-PEoNJpNrM1nOSCw3Y_QuPWLq0nBvWl4h30fIos_Bhg5n6vMIVDTgVLyNN5II4LO9L65A8wrbyJimAyAkjwlbSBHBwENisQ2vl80T4pfexapbGRW1RHckkYaloILMNi9dsvgYXtHUQv2E-lXwF-hCccQ5ZE3sNiwZ0A_O2sjSw6oPTbB_nWbT3TB3dGEiykGrLlABBtCQTNp_H-sdP8sUwK3EmkGcS2-lnAQV8rUtwVCchGSvJIc8tJ2KoMGxDjxSZKIVapZZrpovc9_2j4nF7whGPifvM8jxepp8XkW2SzAQmOVKMZXoyF6_Nwq5bunetkLxp2HfIUQR8JQts5Bqz9DJGx3K1ZtZdHAVpCc9mZStkc3s-0WZtTFukOsGnB5QeE7u6PM4gKScQsozktmF_TmuN1qidUHZJa6q9V04m2RowlrV1SnbQc5GUq33YacFL_R2faHtPzxXt0ZN1O-6iXbRW1Zu4HxeiqjTJivk6ziPTcp-U1aXD-NPgZ46a21KL061Qj6kzc38_facarzCyv1tOdGgVk7OUpCipOSxjZEI9moBKWCzwKn8tQ8yojiCBGQ3xVTC1muEV_4Z2rNByuks5DbUqwKNKFsuIhgu2znFlZo79C1Cb4L36R8rmkoav9IWGvW_-1XVn0O_1-kE3GAyHgUd3-Lnb8fu9frc_xKfbvQ6CN4_-qyJ0_KDX7Q86QTDoDAfD66ve23_1IPGQ"><img alt="Trip Scheduling Flow" loading="lazy" src="https://mermaid.ink/img/pako:eNqNVt9v2jAQ_lcsP21qGvGjZSEPlSpaTX1YxWDVpAmpMvZBIkicOQ6UVf3fd4mdEgcKzQOK47v7vjt_d-aVcimAhnSW5vC3gJTDXcyWiiWzlOCTMaVjHmcs1eQpB3X49Xb88J1p2LLd4d4vFWdTUJuYw-HmnYo3oM5sH34fs10Cqf7Qb6oRFL-bnZLz5c3NnmRIRgrwteJGJmXOuTa2eyP0aFAPyXIyHtWO5YaxN7-PEoNJpNrM1nOSCw3Y_QuPWLq0nBvWl4h30fIos_Bhg5n6vMIVDTgVLyNN5II4LO9L65A8wrbyJimAyAkjwlbSBHBwENisQ2vl80T4pfexapbGRW1RHckkYaloILMNi9dsvgYXtHUQv2E-lXwF-hCccQ5ZE3sNiwZ0A_O2sjSw6oPTbB_nWbT3TB3dGEiykGrLlABBtCQTNp_H-sdP8sUwK3EmkGcS2-lnAQV8rUtwVCchGSvJIc8tJ2KoMGxDjxSZKIVapZZrpovc9_2j4nF7whGPifvM8jxepp8XkW2SzAQmOVKMZXoyF6_Nwq5bunetkLxp2HfIUQR8JQts5Bqz9DJGx3K1ZtZdHAVpCc9mZStkc3s-0WZtTFukOsGnB5QeE7u6PM4gKScQsozktmF_TmuN1qidUHZJa6q9V04m2RowlrV1SnbQc5GUq33YacFL_R2faHtPzxXt0ZN1O-6iXbRW1Zu4HxeiqjTJivk6ziPTcp-U1aXD-NPgZ46a21KL061Qj6kzc38_facarzCyv1tOdGgVk7OUpCipOSxjZEI9moBKWCzwKn8tQ8yojiCBGQ3xVTC1muEV_4Z2rNByuks5DbUqwKNKFsuIhgu2znFlZo79C1Cb4L36R8rmkoav9IWGvW_-1XVn0O_1-kE3GAyHgUd3-Lnb8fu9frc_xKfbvQ6CN4_-qyJ0_KDX7Q86QTDoDAfD66ve23_1IPGQ?type=png"></a></p>
+<h2 id="what-i-learned">What I Learned<a hidden class="anchor" aria-hidden="true" href="#what-i-learned">#</a></h2>
+<ul>
+<li><strong>Start with the domain, not the tech.</strong> It was tempting to jump straight into setting up RabbitMQ and Kubernetes, but defining the business flows first made every technical decision easier — the architecture fell out naturally from the problem.</li>
+<li><strong>Events vs. commands is a useful mental model.</strong> Separating &ldquo;something happened&rdquo; from &ldquo;please do something&rdquo; made the message flow much cleaner and easier to reason about.</li>
+<li><strong>Clean Architecture pays off early.</strong> Even in a small project, having clear boundaries between domain logic and infrastructure made it easy to iterate without breaking things.</li>
+</ul>
+
+
+  </div>
 
   <footer class="post-footer">
     <ul class="post-tags">
