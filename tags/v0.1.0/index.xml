@@ -1,4 +1,33 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>V0.1.0 on Kaiyue Wei</title><link>https://kaiyuewei.me/tags/v0.1.0/</link><description>Recent content in V0.1.0 on Kaiyue Wei</description><generator>Hugo -- 0.147.9</generator><language>en-us</language><lastBuildDate>Thu, 12 Feb 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://kaiyuewei.me/tags/v0.1.0/index.xml" rel="self" type="application/rss+xml"/><item><title>Day 3: Scaffolding the Trip Service</title><link>https://kaiyuewei.me/projects/ride-sharing/day3_trip_service/</link><pubDate>Thu, 12 Feb 2026 00:00:00 +0000</pubDate><guid>https://kaiyuewei.me/projects/ride-sharing/day3_trip_service/</guid><description>&lt;p>With the architecture designed in Day 1 and Go error patterns from Day 2, it&amp;rsquo;s time to build the first real service. The Trip Service is the heart of the platform — it owns the trip lifecycle. I started by scaffolding it using the generator tool:&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>V0.1.0 on Kaiyue Wei</title><link>https://kaiyuewei.me/tags/v0.1.0/</link><description>Recent content in V0.1.0 on Kaiyue Wei</description><generator>Hugo -- 0.147.9</generator><language>en-us</language><lastBuildDate>Sun, 22 Feb 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://kaiyuewei.me/tags/v0.1.0/index.xml" rel="self" type="application/rss+xml"/><item><title>Day 4: Tracing the GetRoute Call Flow</title><link>https://kaiyuewei.me/projects/ride-sharing/day4_get_route/</link><pubDate>Sun, 22 Feb 2026 00:00:00 +0000</pubDate><guid>https://kaiyuewei.me/projects/ride-sharing/day4_get_route/</guid><description>&lt;p>Today I traced the full call flow of &lt;code>GetRoute&lt;/code> — the function that sits at the core of trip previewing. Walking through each layer made the architecture concrete in a way that reading the files in isolation didn&amp;rsquo;t.&lt;/p>
+&lt;h2 id="request-flow">Request Flow&lt;/h2>
+&lt;p>When a client wants to preview a trip, the request passes through three distinct layers before hitting the external routing API:&lt;/p>
+&lt;pre tabindex="0">&lt;code>Client
+POST /trip/preview {userID, pickup, destination}
+│
+▼
+api-gateway/http.go : handleTripPreview
+- validates userID is present
+- re-serializes body as JSON
+- POST http://trip-service:8083/preview ──────────────────────┐
+- wraps response in contracts.APIResponse{Data: ...} │
+- returns 201 │
+▼
+trip-service/infrastructure/http/http.go : HandleTripPreview
+- decodes previewTripRequest {userID, pickup, destination}
+- calls s.Service.GetRoute(ctx, pickup, destination)
+│
+▼
+trip-service/service/service.go : GetRoute
+- builds OSRM URL with lon/lat coords
+- GET http://router.project-osrm.org/route/v1/driving/...
+- unmarshals JSON into OsrmApiResponse
+- returns routes {distance, duration, geometry{coordinates}}
+│
+▼
+back to HandleTripPreview
+- writeJSON 200 with OsrmApiResponse
+&lt;/code>&lt;/pre>&lt;h2 id="layer-responsibilities">Layer Responsibilities&lt;/h2>
+&lt;p>Each layer has a clear, single responsibility:&lt;/p></description></item><item><title>Day 3: Scaffolding the Trip Service</title><link>https://kaiyuewei.me/projects/ride-sharing/day3_trip_service/</link><pubDate>Thu, 12 Feb 2026 00:00:00 +0000</pubDate><guid>https://kaiyuewei.me/projects/ride-sharing/day3_trip_service/</guid><description>&lt;p>With the architecture designed in Day 1 and Go error patterns from Day 2, it&amp;rsquo;s time to build the first real service. The Trip Service is the heart of the platform — it owns the trip lifecycle. I started by scaffolding it using the generator tool:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>go run tools/create_service.go -name trip
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>This gives us the Clean Architecture layout from Day 1:&lt;/p>
 &lt;pre tabindex="0">&lt;code>services/trip-service/
