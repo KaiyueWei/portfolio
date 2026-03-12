@@ -2,31 +2,31 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Posts on Kaiyue Wei</title>
-    <link>http://localhost:1313/posts/</link>
+    <link>https://kaiyuewei.me/posts/</link>
     <description>Recent content in Posts on Kaiyue Wei</description>
     <generator>Hugo -- 0.155.2</generator>
     <language>en-us</language>
     <lastBuildDate>Fri, 26 Dec 2025 00:00:00 -0700</lastBuildDate>
-    <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://kaiyuewei.me/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Investigating Terraform Timeouts for AWS S3 Lifecycle Configuration</title>
-      <link>http://localhost:1313/posts/terraform-aws-timeout/</link>
+      <link>https://kaiyuewei.me/posts/terraform-aws-timeout/</link>
       <pubDate>Fri, 26 Dec 2025 00:00:00 -0700</pubDate>
-      <guid>http://localhost:1313/posts/terraform-aws-timeout/</guid>
-      <description>Root cause analysis</description>
+      <guid>https://kaiyuewei.me/posts/terraform-aws-timeout/</guid>
+      <description>Root cause analysis of Terraform timeouts when applying AWS S3 lifecycle configuration rules.</description>
     </item>
     <item>
-      <title>Debugging a MongoDB Performance Regression with perf, Flamegraphs, and gdb (4.2.1 vs 4.0.13)</title>
-      <link>http://localhost:1313/posts/mongodb-performance-regression/</link>
+      <title>Debugging a MongoDB Performance Regression (4.2.1 vs 4.0.13)</title>
+      <link>https://kaiyuewei.me/posts/mongodb-performance-regression/</link>
       <pubDate>Tue, 16 Dec 2025 00:00:00 -0700</pubDate>
-      <guid>http://localhost:1313/posts/mongodb-performance-regression/</guid>
+      <guid>https://kaiyuewei.me/posts/mongodb-performance-regression/</guid>
       <description>A deep dive into debugging a write-heavy performance regression in MongoDB 4.2.1 using perf, flamegraphs, and gdb.</description>
     </item>
     <item>
       <title>CyberSCI CTF Write-up: Water Treatment</title>
-      <link>http://localhost:1313/posts/cybersci-ctf-writeup/</link>
+      <link>https://kaiyuewei.me/posts/cybersci-ctf-writeup/</link>
       <pubDate>Sun, 30 Nov 2025 00:00:00 -0700</pubDate>
-      <guid>http://localhost:1313/posts/cybersci-ctf-writeup/</guid>
+      <guid>https://kaiyuewei.me/posts/cybersci-ctf-writeup/</guid>
       <description>Reverse engineering a legacy 16-bit DOS executable to bypass a custom implementation of the MD2 hash algorithm.</description>
     </item>
   </channel>

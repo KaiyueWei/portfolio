@@ -2,59 +2,59 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Categories on Kaiyue Wei</title>
-    <link>http://localhost:1313/categories/</link>
+    <link>https://kaiyuewei.me/categories/</link>
     <description>Recent content in Categories on Kaiyue Wei</description>
     <generator>Hugo -- 0.155.2</generator>
     <language>en-us</language>
     <lastBuildDate>Fri, 26 Dec 2025 00:00:00 -0700</lastBuildDate>
-    <atom:link href="http://localhost:1313/categories/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://kaiyuewei.me/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>AWS S3</title>
-      <link>http://localhost:1313/categories/aws-s3/</link>
+      <link>https://kaiyuewei.me/categories/aws-s3/</link>
       <pubDate>Fri, 26 Dec 2025 00:00:00 -0700</pubDate>
-      <guid>http://localhost:1313/categories/aws-s3/</guid>
+      <guid>https://kaiyuewei.me/categories/aws-s3/</guid>
       <description></description>
     </item>
     <item>
       <title>DistributedSystem</title>
-      <link>http://localhost:1313/categories/distributedsystem/</link>
+      <link>https://kaiyuewei.me/categories/distributedsystem/</link>
       <pubDate>Fri, 26 Dec 2025 00:00:00 -0700</pubDate>
-      <guid>http://localhost:1313/categories/distributedsystem/</guid>
+      <guid>https://kaiyuewei.me/categories/distributedsystem/</guid>
       <description></description>
     </item>
     <item>
       <title>Terraform</title>
-      <link>http://localhost:1313/categories/terraform/</link>
+      <link>https://kaiyuewei.me/categories/terraform/</link>
       <pubDate>Fri, 26 Dec 2025 00:00:00 -0700</pubDate>
-      <guid>http://localhost:1313/categories/terraform/</guid>
+      <guid>https://kaiyuewei.me/categories/terraform/</guid>
       <description></description>
     </item>
     <item>
       <title>Database</title>
-      <link>http://localhost:1313/categories/database/</link>
+      <link>https://kaiyuewei.me/categories/database/</link>
       <pubDate>Tue, 16 Dec 2025 00:00:00 -0700</pubDate>
-      <guid>http://localhost:1313/categories/database/</guid>
+      <guid>https://kaiyuewei.me/categories/database/</guid>
       <description></description>
     </item>
     <item>
       <title>Performance</title>
-      <link>http://localhost:1313/categories/performance/</link>
+      <link>https://kaiyuewei.me/categories/performance/</link>
       <pubDate>Tue, 16 Dec 2025 00:00:00 -0700</pubDate>
-      <guid>http://localhost:1313/categories/performance/</guid>
+      <guid>https://kaiyuewei.me/categories/performance/</guid>
       <description></description>
     </item>
     <item>
       <title>CTF</title>
-      <link>http://localhost:1313/categories/ctf/</link>
+      <link>https://kaiyuewei.me/categories/ctf/</link>
       <pubDate>Sun, 30 Nov 2025 00:00:00 -0700</pubDate>
-      <guid>http://localhost:1313/categories/ctf/</guid>
+      <guid>https://kaiyuewei.me/categories/ctf/</guid>
       <description></description>
     </item>
     <item>
       <title>Reverse Engineering</title>
-      <link>http://localhost:1313/categories/reverse-engineering/</link>
+      <link>https://kaiyuewei.me/categories/reverse-engineering/</link>
       <pubDate>Sun, 30 Nov 2025 00:00:00 -0700</pubDate>
-      <guid>http://localhost:1313/categories/reverse-engineering/</guid>
+      <guid>https://kaiyuewei.me/categories/reverse-engineering/</guid>
       <description></description>
     </item>
   </channel>

@@ -1,25 +1,25 @@
 <!DOCTYPE html>
 <html lang="en" dir="auto">
 
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="noindex, nofollow">
+<meta name="robots" content="index, follow">
 <title>Ride Sharing | Kaiyue Wei</title>
 <meta name="keywords" content="Go, TypeScript, Docker, Kubernetes, Microservices, RabbitMQ, Next.js, WebSocket">
-<meta name="description" content="This project documents my journey building a microservices-based ride-sharing platform (Uber-style), applying what I&rsquo;ve learnt in Operating System and Distributed System. Each part covers a concept I explored and the decisions I made along the way — from choosing between monolithic and microservices architectures, to designing event-driven communication with RabbitMQ, to handling errors idiomatically in Go.">
+<meta name="description" content="Building an Uber-style ride-sharing platform with microservices in Go and TypeScript, event-driven communication via RabbitMQ, and real-time updates with WebSockets.">
 <meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/projects/ride-sharing/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.2211ca3164be7830024f6aad2b3a2e520843a64f8f048445c3401c1249aa051d.css" integrity="sha256-IhHKMWS&#43;eDACT2qtKzouUghDpk&#43;PBIRFw0AcEkmqBR0=" rel="preload stylesheet" as="style">
-<link rel="icon" href="http://localhost:1313/assets/favicon.png">
-<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
-<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
-<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<link rel="canonical" href="https://kaiyuewei.me/projects/ride-sharing/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.0951779cc5f645ba2fea2114dc737d88e794f9954feab6025f41de47ad5c2e76.css" integrity="sha256-CVF3nMX2Rbov6iEU3HN9iOeU&#43;ZVP6rYCX0HeR61cLnY=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://kaiyuewei.me/assets/favicon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://kaiyuewei.me/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://kaiyuewei.me/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://kaiyuewei.me/apple-touch-icon.png">
+<link rel="mask-icon" href="https://kaiyuewei.me/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/projects/ride-sharing/index.xml">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/projects/ride-sharing/">
+<link rel="alternate" type="application/rss+xml" href="https://kaiyuewei.me/projects/ride-sharing/index.xml">
+<link rel="alternate" hreflang="en" href="https://kaiyuewei.me/projects/ride-sharing/">
 <noscript>
     <style>
         #theme-toggle,
@@ -56,7 +56,42 @@
         }
 
     </style>
-</noscript>
+</noscript><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@500;600;700&display=swap" rel="stylesheet">
+<meta property="og:url" content="https://kaiyuewei.me/projects/ride-sharing/">
+  <meta property="og:site_name" content="Kaiyue Wei">
+  <meta property="og:title" content="Ride Sharing">
+  <meta property="og:description" content="Building an Uber-style ride-sharing platform with microservices in Go and TypeScript, event-driven communication via RabbitMQ, and real-time updates with WebSockets.">
+  <meta property="og:locale" content="en-us">
+  <meta property="og:type" content="website">
+    <meta property="og:image" content="https://kaiyuewei.me/images/ride-sharing/day0/hybrid.jpeg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kaiyuewei.me/images/ride-sharing/day0/hybrid.jpeg">
+<meta name="twitter:title" content="Ride Sharing">
+<meta name="twitter:description" content="Building an Uber-style ride-sharing platform with microservices in Go and TypeScript, event-driven communication via RabbitMQ, and real-time updates with WebSockets.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Projects",
+      "item": "https://kaiyuewei.me/projects/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Ride Sharing",
+      "item": "https://kaiyuewei.me/projects/ride-sharing/"
+    }
+  ]
+}
+</script>
 </head>
 
 <body class="list" id="top">
@@ -74,7 +109,7 @@
 <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="http://localhost:1313/" accesskey="h" title="Kaiyue Wei (Alt + H)">Kaiyue Wei</a>
+            <a href="https://kaiyuewei.me/" accesskey="h" title="Kaiyue Wei (Alt + H)">Kaiyue Wei</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -100,28 +135,29 @@
         </div>
         <ul id="menu">
             <li>
-                <a href="http://localhost:1313/about/" title="about">
+                <a href="https://kaiyuewei.me/about/" title="about">
                     <span>about</span>
                 </a>
             </li>
             <li>
-                <a href="http://localhost:1313/tags/" title="tags">
+                <a href="https://kaiyuewei.me/tags/" title="tags">
                     <span>tags</span>
                 </a>
             </li>
             <li>
-                <a href="http://localhost:1313/search/" title="search (Alt &#43; /)" accesskey=/>
+                <a href="https://kaiyuewei.me/search/" title="search (Alt &#43; /)" accesskey=/>
                     <span>search</span>
                 </a>
             </li>
         </ul>
     </nav>
 </header>
-<main class="main"> 
+<main class="main">
 <header class="page-header">
-  <h1>
-    Ride Sharing
-  </h1>
+  <h1>Ride Sharing</h1>
+  <div class="post-description">
+    Building an Uber-style ride-sharing platform with microservices in Go and TypeScript, event-driven communication via RabbitMQ, and real-time updates with WebSockets.
+  </div>
 </header>
 <div class="post-content"><p>This project documents my journey building a microservices-based ride-sharing platform (Uber-style), applying what I&rsquo;ve learnt in Operating System and Distributed System. Each part covers a concept I explored and the decisions I made along the way — from choosing between monolithic and microservices architectures, to designing event-driven communication with RabbitMQ, to handling errors idiomatically in Go.</p>
 <ul>
@@ -133,14 +169,30 @@
 <li><a href="/projects/ride-sharing/day1_business_problem/">Day 1: The Business Problem</a></li>
 <li><a href="/projects/ride-sharing/day2_error_handling/">Day 2: Error Handling in Go</a></li>
 <li><a href="/projects/ride-sharing/day3_trip_service/">Day 3: Scaffolding the Trip Service</a></li>
+<li><a href="/projects/ride-sharing/day4_get_route/">Day 4: Tracing the GetRoute Call Flow</a></li>
 </ol>
 
 </div>
-
-<article class="post-entry"> 
+<article class="post-entry project-card"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">Day 3: Scaffolding the Trip Service
-    </h2>
+    <h2>Day 4: Tracing the GetRoute Call Flow</h2>
+  </header>
+  <div class="entry-content">
+    <p>Today I traced the full call flow of GetRoute — the function that sits at the core of trip previewing. Walking through each layer made the architecture concrete in a way that reading the files in isolation didn’t.
+Request Flow When a client wants to preview a trip, the request passes through three distinct layers before hitting the external routing API:
+Client POST /trip/preview {userID, pickup, destination} │ ▼ api-gateway/http.go : handleTripPreview - validates userID is present - re-serializes body as JSON - POST http://trip-service:8083/preview ──────────────────────┐ - wraps response in contracts.APIResponse{Data: ...} │ - returns 201 │ ▼ trip-service/infrastructure/http/http.go : HandleTripPreview - decodes previewTripRequest {userID, pickup, destination} - calls s.Service.GetRoute(ctx, pickup, destination) │ ▼ trip-service/service/service.go : GetRoute - builds OSRM URL with lon/lat coords - GET http://router.project-osrm.org/route/v1/driving/... - unmarshals JSON into OsrmApiResponse - returns routes {distance, duration, geometry{coordinates}} │ ▼ back to HandleTripPreview - writeJSON 200 with OsrmApiResponse Layer Responsibilities Each layer has a clear, single responsibility:
+...</p>
+  </div>
+  <div class="project-tech-stack">
+    <span class="tech-badge">v0.1.0</span>
+  </div>
+  <footer class="entry-footer"><span title='2026-02-22 00:00:00 +0000 UTC'>February 22, 2026</span>
+  </footer>
+  <a class="entry-link" aria-label="post link to Day 4: Tracing the GetRoute Call Flow" href="https://kaiyuewei.me/projects/ride-sharing/day4_get_route/"></a>
+</article>
+<article class="post-entry project-card"> 
+  <header class="entry-header">
+    <h2>Day 3: Scaffolding the Trip Service</h2>
   </header>
   <div class="entry-content">
     <p>With the architecture designed in Day 1 and Go error patterns from Day 2, it’s time to build the first real service. The Trip Service is the heart of the platform — it owns the trip lifecycle. I started by scaffolding it using the generator tool:
@@ -148,14 +200,16 @@ go run tools/create_service.go -name trip This gives us the Clean Architecture l
 services/trip-service/ ├── cmd/ # Application entry point ├── internal/ │ ├── domain/ # Business domain models and interfaces │ │ └── trip.go │ ├── service/ # Business logic implementation │ │ └── service.go │ └── infrastructure/ # External dependency implementations │ ├── events/ # Event handling (RabbitMQ) │ ├── grpc/ # gRPC server handlers │ └── repository/ # Data persistence ├── pkg/ │ └── types/ # Shared types and models └── README.md Domain Layer The domain layer defines the core models and interfaces — no implementation details, no imports from infrastructure packages.
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2026-02-12 00:00:00 +0000 UTC'>February 12, 2026</span></footer>
-  <a class="entry-link" aria-label="post link to Day 3: Scaffolding the Trip Service" href="http://localhost:1313/projects/ride-sharing/day3_trip_service/"></a>
+  <div class="project-tech-stack">
+    <span class="tech-badge">v0.1.0</span>
+  </div>
+  <footer class="entry-footer"><span title='2026-02-12 00:00:00 +0000 UTC'>February 12, 2026</span>
+  </footer>
+  <a class="entry-link" aria-label="post link to Day 3: Scaffolding the Trip Service" href="https://kaiyuewei.me/projects/ride-sharing/day3_trip_service/"></a>
 </article>
-
-<article class="post-entry"> 
+<article class="post-entry project-card"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">Day 2: Error Handling in Go
-    </h2>
+    <h2>Day 2: Error Handling in Go</h2>
   </header>
   <div class="entry-content">
     <p>In Go, errors are values, not exceptions. There is no try/catch — instead, functions return an error as part of their return values, and the caller is responsible for checking it. This makes error handling explicit and forces you to think about failure paths at every step.
@@ -163,14 +217,13 @@ The error Interface At its core, Go’s error type is just an interface:
 type error interface { Error() string } Any type that implements the Error() string method satisfies this interface. The built-in errors.New() and fmt.Errorf() are the most common ways to create errors.
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2026-02-11 00:00:00 +0000 UTC'>February 11, 2026</span></footer>
-  <a class="entry-link" aria-label="post link to Day 2: Error Handling in Go" href="http://localhost:1313/projects/ride-sharing/day2_error_handling/"></a>
+  <footer class="entry-footer"><span title='2026-02-11 00:00:00 +0000 UTC'>February 11, 2026</span>
+  </footer>
+  <a class="entry-link" aria-label="post link to Day 2: Error Handling in Go" href="https://kaiyuewei.me/projects/ride-sharing/day2_error_handling/"></a>
 </article>
-
-<article class="post-entry"> 
+<article class="post-entry project-card"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">Day 1: The Business Problem
-    </h2>
+    <h2>Day 1: The Business Problem</h2>
   </header>
   <div class="entry-content">
     <p>After exploring the theory behind microservices in Day 0, it’s time to define what we’re actually building and why.
@@ -179,14 +232,13 @@ The key user flows are:
 Rider: pick a location on a map, preview the trip/fare, request a ride, get matched with a driver, and pay Driver: register with a car package, see incoming trip requests, accept or decline, and navigate to the rider What makes this interesting from a systems perspective is that nearly every interaction is time-sensitive and event-driven. When a rider requests a trip, we need to notify available drivers immediately. When a driver accepts, the rider needs to know right away. Polling or REST request-response alone won’t cut it.
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2026-02-10 00:00:00 +0000 UTC'>February 10, 2026</span></footer>
-  <a class="entry-link" aria-label="post link to Day 1: The Business Problem" href="http://localhost:1313/projects/ride-sharing/day1_business_problem/"></a>
+  <footer class="entry-footer"><span title='2026-02-10 00:00:00 +0000 UTC'>February 10, 2026</span>
+  </footer>
+  <a class="entry-link" aria-label="post link to Day 1: The Business Problem" href="https://kaiyuewei.me/projects/ride-sharing/day1_business_problem/"></a>
 </article>
-
-<article class="post-entry"> 
+<article class="post-entry project-card"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">Day 0: Monolithic vs Microservices
-    </h2>
+    <h2>Day 0: Monolithic vs Microservices</h2>
   </header>
   <div class="entry-content">
     <p>References Strangler Fig Microservice Architecture pattern Service Micro Autonomous Loosely coupled Context bound Coupling — describes how much one module relies on other modules.
@@ -195,13 +247,25 @@ Communication Styles Synchronous Request-Response (blocking) HTTP/REST (GraphQL 
 a ket concept in REST is a resource, which represents a business domain(User, Post, Trip) REST uses the HTTP verbs (GET, POST, PUT, DELETE) for manipulating resouces, which are referenced using a URL No strict contract; loosely defined via documentation text-based (JSON, XML) Excellent for public-facing APIs and scenerios where interoperabilty and ease of debugging are prioritized.
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2026-02-09 00:00:00 +0000 UTC'>February 9, 2026</span></footer>
-  <a class="entry-link" aria-label="post link to Day 0: Monolithic vs Microservices" href="http://localhost:1313/projects/ride-sharing/day0_microservices/"></a>
+  <footer class="entry-footer"><span title='2026-02-09 00:00:00 +0000 UTC'>February 9, 2026</span>
+  </footer>
+  <a class="entry-link" aria-label="post link to Day 0: Monolithic vs Microservices" href="https://kaiyuewei.me/projects/ride-sharing/day0_microservices/"></a>
+</article>
+<article class="post-entry project-card"> 
+  <header class="entry-header">
+    <h2></h2>
+  </header>
+  <div class="entry-content">
+    <p></p>
+  </div>
+  <footer class="entry-footer">
+  </footer>
+  <a class="entry-link" aria-label="post link to " href="https://kaiyuewei.me/projects/ride-sharing/tools/"></a>
 </article>
     </main>
     
 <footer class="footer">
-        <span>&copy; 2026 <a href="http://localhost:1313/">Kaiyue Wei</a></span> · 
+        <span>&copy; 2026 <a href="https://kaiyuewei.me/">Kaiyue Wei</a></span> · 
 
     <span>
         Powered by

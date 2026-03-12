@@ -5,6 +5,10 @@ draft: false
 categories: ["CTF", "Reverse Engineering"]
 tags: ["Ghidra", "Python", "Crypto", "DOS", "Assembly"]
 description: "Reverse engineering a legacy 16-bit DOS executable to bypass a custom implementation of the MD2 hash algorithm."
+cover:
+    image: "images/flag1.png"
+    alt: "CyberSCI CTF challenge"
+    hidden: false
 ---
 
 I recently tackled the **Water Treatment** reverse engineering challenge from the [CyberSCI Regionals 2025-26](https://github.com/CyberSCI/PastChallenges/tree/main/challenges/regionals-2025-26/re/water-treatment). The challenge involves a legacy 16-bit MS-DOS executable (`wt.exe`) and consists of three flags.

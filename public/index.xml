@@ -2,17 +2,53 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Kaiyue Wei</title>
-    <link>http://localhost:1313/</link>
+    <link>https://kaiyuewei.me/</link>
     <description>Recent content on Kaiyue Wei</description>
     <generator>Hugo -- 0.155.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 12 Feb 2026 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 22 Feb 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://kaiyuewei.me/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Day 4: Tracing the GetRoute Call Flow</title>
+      <link>https://kaiyuewei.me/projects/ride-sharing/day4_get_route/</link>
+      <pubDate>Sun, 22 Feb 2026 00:00:00 +0000</pubDate>
+      <guid>https://kaiyuewei.me/projects/ride-sharing/day4_get_route/</guid>
+      <description>&lt;p&gt;Today I traced the full call flow of &lt;code&gt;GetRoute&lt;/code&gt; — the function that sits at the core of trip previewing. Walking through each layer made the architecture concrete in a way that reading the files in isolation didn&amp;rsquo;t.&lt;/p&gt;
+&lt;h2 id=&#34;request-flow&#34;&gt;Request Flow&lt;/h2&gt;
+&lt;p&gt;When a client wants to preview a trip, the request passes through three distinct layers before hitting the external routing API:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;Client
+  POST /trip/preview  {userID, pickup, destination}
+  │
+  ▼
+api-gateway/http.go : handleTripPreview
+  - validates userID is present
+  - re-serializes body as JSON
+  - POST http://trip-service:8083/preview  ──────────────────────┐
+  - wraps response in contracts.APIResponse{Data: ...}           │
+  - returns 201                                                   │
+                                                                  ▼
+                              trip-service/infrastructure/http/http.go : HandleTripPreview
+                                - decodes previewTripRequest {userID, pickup, destination}
+                                - calls s.Service.GetRoute(ctx, pickup, destination)
+                                │
+                                ▼
+                              trip-service/service/service.go : GetRoute
+                                - builds OSRM URL with lon/lat coords
+                                - GET http://router.project-osrm.org/route/v1/driving/...
+                                - unmarshals JSON into OsrmApiResponse
+                                - returns routes {distance, duration, geometry{coordinates}}
+                                │
+                                ▼
+                              back to HandleTripPreview
+                                - writeJSON 200 with OsrmApiResponse
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;layer-responsibilities&#34;&gt;Layer Responsibilities&lt;/h2&gt;
+&lt;p&gt;Each layer has a clear, single responsibility:&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Day 3: Scaffolding the Trip Service</title>
-      <link>http://localhost:1313/projects/ride-sharing/day3_trip_service/</link>
+      <link>https://kaiyuewei.me/projects/ride-sharing/day3_trip_service/</link>
       <pubDate>Thu, 12 Feb 2026 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/projects/ride-sharing/day3_trip_service/</guid>
+      <guid>https://kaiyuewei.me/projects/ride-sharing/day3_trip_service/</guid>
       <description>&lt;p&gt;With the architecture designed in Day 1 and Go error patterns from Day 2, it&amp;rsquo;s time to build the first real service. The Trip Service is the heart of the platform — it owns the trip lifecycle. I started by scaffolding it using the generator tool:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;go run tools/create_service.go -name trip
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This gives us the Clean Architecture layout from Day 1:&lt;/p&gt;
@@ -35,9 +71,9 @@
     </item>
     <item>
       <title>Day 2: Error Handling in Go</title>
-      <link>http://localhost:1313/projects/ride-sharing/day2_error_handling/</link>
+      <link>https://kaiyuewei.me/projects/ride-sharing/day2_error_handling/</link>
       <pubDate>Wed, 11 Feb 2026 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/projects/ride-sharing/day2_error_handling/</guid>
+      <guid>https://kaiyuewei.me/projects/ride-sharing/day2_error_handling/</guid>
       <description>&lt;p&gt;In Go, errors are &lt;strong&gt;values&lt;/strong&gt;, not exceptions. There is no &lt;code&gt;try/catch&lt;/code&gt; — instead, functions return an &lt;code&gt;error&lt;/code&gt; as part of their return values, and the caller is responsible for checking it. This makes error handling explicit and forces you to think about failure paths at every step.&lt;/p&gt;
 &lt;h2 id=&#34;the-error-interface&#34;&gt;The &lt;code&gt;error&lt;/code&gt; Interface&lt;/h2&gt;
 &lt;p&gt;At its core, Go&amp;rsquo;s &lt;code&gt;error&lt;/code&gt; type is just an interface:&lt;/p&gt;
@@ -48,9 +84,9 @@
     </item>
     <item>
       <title>Day 1: The Business Problem</title>
-      <link>http://localhost:1313/projects/ride-sharing/day1_business_problem/</link>
+      <link>https://kaiyuewei.me/projects/ride-sharing/day1_business_problem/</link>
       <pubDate>Tue, 10 Feb 2026 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/projects/ride-sharing/day1_business_problem/</guid>
+      <guid>https://kaiyuewei.me/projects/ride-sharing/day1_business_problem/</guid>
       <description>&lt;p&gt;After exploring the theory behind microservices in Day 0, it&amp;rsquo;s time to define what we&amp;rsquo;re actually building and why.&lt;/p&gt;
 &lt;h2 id=&#34;what-are-we-building&#34;&gt;What Are We Building?&lt;/h2&gt;
 &lt;p&gt;A ride-sharing platform — think Uber or Lyft. At its core, the problem is simple: &lt;strong&gt;a rider wants to go somewhere, and a driver can take them there&lt;/strong&gt;. But the real complexity comes from making this work in real time.&lt;/p&gt;
@@ -63,9 +99,9 @@
     </item>
     <item>
       <title>Day 0: Monolithic vs Microservices</title>
-      <link>http://localhost:1313/projects/ride-sharing/day0_microservices/</link>
+      <link>https://kaiyuewei.me/projects/ride-sharing/day0_microservices/</link>
       <pubDate>Mon, 09 Feb 2026 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/projects/ride-sharing/day0_microservices/</guid>
+      <guid>https://kaiyuewei.me/projects/ride-sharing/day0_microservices/</guid>
       <description>&lt;h2 id=&#34;references&#34;&gt;References&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://martinfowler.com/bliki/StranglerFigApplication.html&#34;&gt;Strangler Fig&lt;/a&gt;&lt;/li&gt;
@@ -93,37 +129,44 @@
     </item>
     <item>
       <title>Data Engineering (Part 1): Container Networking</title>
-      <link>http://localhost:1313/projects/data-engineering/container-network/</link>
+      <link>https://kaiyuewei.me/projects/data-engineering/container-network/</link>
       <pubDate>Thu, 01 Jan 2026 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/projects/data-engineering/container-network/</guid>
+      <guid>https://kaiyuewei.me/projects/data-engineering/container-network/</guid>
       <description>&lt;p&gt;When you containerize a pipeline, the most common failure isn’t your code — it’s usually how services address each other.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Investigating Terraform Timeouts for AWS S3 Lifecycle Configuration</title>
-      <link>http://localhost:1313/posts/terraform-aws-timeout/</link>
+      <link>https://kaiyuewei.me/posts/terraform-aws-timeout/</link>
       <pubDate>Fri, 26 Dec 2025 00:00:00 -0700</pubDate>
-      <guid>http://localhost:1313/posts/terraform-aws-timeout/</guid>
-      <description>Root cause analysis</description>
+      <guid>https://kaiyuewei.me/posts/terraform-aws-timeout/</guid>
+      <description>Root cause analysis of Terraform timeouts when applying AWS S3 lifecycle configuration rules.</description>
     </item>
     <item>
-      <title>Debugging a MongoDB Performance Regression with perf, Flamegraphs, and gdb (4.2.1 vs 4.0.13)</title>
-      <link>http://localhost:1313/posts/mongodb-performance-regression/</link>
+      <title>Debugging a MongoDB Performance Regression (4.2.1 vs 4.0.13)</title>
+      <link>https://kaiyuewei.me/posts/mongodb-performance-regression/</link>
       <pubDate>Tue, 16 Dec 2025 00:00:00 -0700</pubDate>
-      <guid>http://localhost:1313/posts/mongodb-performance-regression/</guid>
+      <guid>https://kaiyuewei.me/posts/mongodb-performance-regression/</guid>
       <description>A deep dive into debugging a write-heavy performance regression in MongoDB 4.2.1 using perf, flamegraphs, and gdb.</description>
     </item>
     <item>
       <title>CyberSCI CTF Write-up: Water Treatment</title>
-      <link>http://localhost:1313/posts/cybersci-ctf-writeup/</link>
+      <link>https://kaiyuewei.me/posts/cybersci-ctf-writeup/</link>
       <pubDate>Sun, 30 Nov 2025 00:00:00 -0700</pubDate>
-      <guid>http://localhost:1313/posts/cybersci-ctf-writeup/</guid>
+      <guid>https://kaiyuewei.me/posts/cybersci-ctf-writeup/</guid>
       <description>Reverse engineering a legacy 16-bit DOS executable to bypass a custom implementation of the MD2 hash algorithm.</description>
     </item>
     <item>
-      <title>About Me</title>
-      <link>http://localhost:1313/about/</link>
+      <title></title>
+      <link>https://kaiyuewei.me/projects/ride-sharing/tools/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/about/</guid>
+      <guid>https://kaiyuewei.me/projects/ride-sharing/tools/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>About Me</title>
+      <link>https://kaiyuewei.me/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://kaiyuewei.me/about/</guid>
       <description>&lt;p&gt;Hi, I&amp;rsquo;m &lt;strong&gt;Kaiyue Wei&lt;/strong&gt;.&lt;/p&gt;
 &lt;p&gt;I am a Master&amp;rsquo;s student passionate about &lt;strong&gt;Systems Programming&lt;/strong&gt;, &lt;strong&gt;Operating Systems&lt;/strong&gt;, and &lt;strong&gt;Security&lt;/strong&gt;.&lt;/p&gt;
 &lt;p&gt;I enjoy diving deep into low-level code, performance bug root cause analysis, and building efficient software.&lt;/p&gt;

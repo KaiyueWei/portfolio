@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" dir="auto">
 
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="noindex, nofollow">
+<meta name="robots" content="index, follow">
 <title>Day 2: Error Handling in Go | Kaiyue Wei</title>
 <meta name="keywords" content="">
 <meta name="description" content="In Go, errors are values, not exceptions. There is no try/catch — instead, functions return an error as part of their return values, and the caller is responsible for checking it. This makes error handling explicit and forces you to think about failure paths at every step.
@@ -15,16 +15,16 @@ type error interface {
 }
 Any type that implements the Error() string method satisfies this interface. The built-in errors.New() and fmt.Errorf() are the most common ways to create errors.">
 <meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/projects/ride-sharing/day2_error_handling/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.2211ca3164be7830024f6aad2b3a2e520843a64f8f048445c3401c1249aa051d.css" integrity="sha256-IhHKMWS&#43;eDACT2qtKzouUghDpk&#43;PBIRFw0AcEkmqBR0=" rel="preload stylesheet" as="style">
-<link rel="icon" href="http://localhost:1313/assets/favicon.png">
-<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
-<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
-<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<link rel="canonical" href="https://kaiyuewei.me/projects/ride-sharing/day2_error_handling/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.0951779cc5f645ba2fea2114dc737d88e794f9954feab6025f41de47ad5c2e76.css" integrity="sha256-CVF3nMX2Rbov6iEU3HN9iOeU&#43;ZVP6rYCX0HeR61cLnY=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://kaiyuewei.me/assets/favicon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://kaiyuewei.me/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://kaiyuewei.me/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://kaiyuewei.me/apple-touch-icon.png">
+<link rel="mask-icon" href="https://kaiyuewei.me/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/projects/ride-sharing/day2_error_handling/">
+<link rel="alternate" hreflang="en" href="https://kaiyuewei.me/projects/ride-sharing/day2_error_handling/">
 <noscript>
     <style>
         #theme-toggle,
@@ -61,7 +61,86 @@ Any type that implements the Error() string method satisfies this interface. The
         }
 
     </style>
-</noscript>
+</noscript><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@500;600;700&display=swap" rel="stylesheet">
+<meta property="og:url" content="https://kaiyuewei.me/projects/ride-sharing/day2_error_handling/">
+  <meta property="og:site_name" content="Kaiyue Wei">
+  <meta property="og:title" content="Day 2: Error Handling in Go">
+  <meta property="og:description" content="In Go, errors are values, not exceptions. There is no try/catch — instead, functions return an error as part of their return values, and the caller is responsible for checking it. This makes error handling explicit and forces you to think about failure paths at every step.
+The error Interface At its core, Go’s error type is just an interface:
+type error interface { Error() string } Any type that implements the Error() string method satisfies this interface. The built-in errors.New() and fmt.Errorf() are the most common ways to create errors.">
+  <meta property="og:locale" content="en-us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="projects">
+    <meta property="article:published_time" content="2026-02-11T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-02-11T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Day 2: Error Handling in Go">
+<meta name="twitter:description" content="In Go, errors are values, not exceptions. There is no try/catch — instead, functions return an error as part of their return values, and the caller is responsible for checking it. This makes error handling explicit and forces you to think about failure paths at every step.
+The error Interface
+At its core, Go&rsquo;s error type is just an interface:
+type error interface {
+	Error() string
+}
+Any type that implements the Error() string method satisfies this interface. The built-in errors.New() and fmt.Errorf() are the most common ways to create errors.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Projects",
+      "item": "https://kaiyuewei.me/projects/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Ride Sharing",
+      "item": "https://kaiyuewei.me/projects/ride-sharing/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "Day 2: Error Handling in Go",
+      "item": "https://kaiyuewei.me/projects/ride-sharing/day2_error_handling/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Day 2: Error Handling in Go",
+  "name": "Day 2: Error Handling in Go",
+  "description": "In Go, errors are values, not exceptions. There is no try/catch — instead, functions return an error as part of their return values, and the caller is responsible for checking it. This makes error handling explicit and forces you to think about failure paths at every step.\nThe error Interface At its core, Go\u0026rsquo;s error type is just an interface:\ntype error interface { Error() string } Any type that implements the Error() string method satisfies this interface. The built-in errors.New() and fmt.Errorf() are the most common ways to create errors.\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "In Go, errors are values, not exceptions. There is no try/catch — instead, functions return an error as part of their return values, and the caller is responsible for checking it. This makes error handling explicit and forces you to think about failure paths at every step.\nThe error Interface At its core, Go’s error type is just an interface:\ntype error interface { Error() string } Any type that implements the Error() string method satisfies this interface. The built-in errors.New() and fmt.Errorf() are the most common ways to create errors.\nSentinel Errors Sentinel errors are package-level variables that represent specific, well-known error conditions. By convention, they use the Err prefix.\nvar ( ErrNotImplemented = errors.New(\"not implemented\") ErrNotFound = errors.New(\"not found\") ) Note: The short declaration operator := is only allowed inside functions as a statement. The var () block works at both the package level and inside functions. The key reason: package-level variables can’t use :=.\nReturning and Wrapping Errors Here’s a practical example — a Truck type with a method that can fail:\ntype Truck struct { id string } func (t *Truck) LoadCargo() error { // simulate a failure return ErrNotImplemented } func processTruck(truck Truck) error { fmt.Printf(\"Processing truck: %s\\n\", truck.id) if err := truck.LoadCargo(); err != nil { return fmt.Errorf(\"error loading cargo for %s: %w\", truck.id, err) } return nil } The %w verb in fmt.Errorf wraps the original error, preserving the error chain so callers can unwrap and inspect it later with errors.Is() or errors.As().\nHandling Errors Option 1: Check after the call err := processTruck(truck) if err != nil { log.Fatalf(\"error processing truck: %v\", err) } Option 2: Inline short declaration (idiomatic Go) if err := processTruck(truck); err != nil { log.Fatalf(\"error processing truck: %v\", err) } Option 2 is more idiomatic — it scopes err to the if block, keeping the surrounding scope clean.\nMatching Sentinel Errors When a function can return different types of errors, you can branch on them. Use errors.Is() to match against sentinel errors — this works even if the error was wrapped with fmt.Errorf(\"...: %w\", err):\nfunc main() { trucks := []Truck{ {id: \"Truck-1\"}, {id: \"Truck-2\"}, {id: \"Truck-3\"}, } for _, truck := range trucks { fmt.Printf(\"Truck %s arrived.\\n\", truck.id) err := processTruck(truck) if err != nil { switch { case errors.Is(err, ErrNotImplemented): fmt.Printf(\"Skipping %s: not implemented yet\\n\", truck.id) continue case errors.Is(err, ErrNotFound): fmt.Printf(\"Skipping %s: not found\\n\", truck.id) continue default: log.Fatalf(\"unexpected error processing %s: %v\", truck.id, err) } } } } Why errors.Is() over ==? A direct comparison like err == ErrNotFound fails if the error has been wrapped. errors.Is() unwraps the error chain and checks each layer, so it works with fmt.Errorf(\"...: %w\", err).\nCustom Error Types For richer error information, you can define your own error type:\ntype ValidationError struct { Field string Message string } func (e *ValidationError) Error() string { return fmt.Sprintf(\"validation failed on %s: %s\", e.Field, e.Message) } Use errors.As() to extract a custom error type from a wrapped chain:\nvar validationErr *ValidationError if errors.As(err, \u0026validationErr) { fmt.Printf(\"Field: %s, Message: %s\\n\", validationErr.Field, validationErr.Message) } Summary Concept Use errors.New() Create simple sentinel errors fmt.Errorf(\"...: %w\", err) Wrap errors with context errors.Is(err, target) Check if an error matches a sentinel errors.As(err, \u0026target) Extract a specific error type from the chain Custom error types Carry structured data with errors ",
+  "wordCount" : "553",
+  "inLanguage": "en",
+  "datePublished": "2026-02-11T00:00:00Z",
+  "dateModified": "2026-02-11T00:00:00Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://kaiyuewei.me/projects/ride-sharing/day2_error_handling/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Kaiyue Wei",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://kaiyuewei.me/assets/favicon.png"
+    }
+  }
+}
+</script>
 </head>
 
 <body class="" id="top">
@@ -79,7 +158,7 @@ Any type that implements the Error() string method satisfies this interface. The
 <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="http://localhost:1313/" accesskey="h" title="Kaiyue Wei (Alt + H)">Kaiyue Wei</a>
+            <a href="https://kaiyuewei.me/" accesskey="h" title="Kaiyue Wei (Alt + H)">Kaiyue Wei</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -105,17 +184,17 @@ Any type that implements the Error() string method satisfies this interface. The
         </div>
         <ul id="menu">
             <li>
-                <a href="http://localhost:1313/about/" title="about">
+                <a href="https://kaiyuewei.me/about/" title="about">
                     <span>about</span>
                 </a>
             </li>
             <li>
-                <a href="http://localhost:1313/tags/" title="tags">
+                <a href="https://kaiyuewei.me/tags/" title="tags">
                     <span>tags</span>
                 </a>
             </li>
             <li>
-                <a href="http://localhost:1313/search/" title="search (Alt &#43; /)" accesskey=/>
+                <a href="https://kaiyuewei.me/search/" title="search (Alt &#43; /)" accesskey=/>
                     <span>search</span>
                 </a>
             </li>
@@ -269,7 +348,7 @@ The key reason: <strong>package-level variables can&rsquo;t use <code>:=</code><
     </main>
     
 <footer class="footer">
-        <span>&copy; 2026 <a href="http://localhost:1313/">Kaiyue Wei</a></span> · 
+        <span>&copy; 2026 <a href="https://kaiyuewei.me/">Kaiyue Wei</a></span> · 
 
     <span>
         Powered by

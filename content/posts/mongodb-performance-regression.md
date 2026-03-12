@@ -1,10 +1,14 @@
 ---
-title: "Debugging a MongoDB Performance Regression with perf, Flamegraphs, and gdb (4.2.1 vs 4.0.13)"
+title: "Debugging a MongoDB Performance Regression (4.2.1 vs 4.0.13)"
 date: '2025-12-16T00:00:00-07:00'
 draft: false
 categories: ["Performance", "Database"]
 tags: ["MongoDB", "Debugging", "perf", "gdb", "Flamegraphs"]
 description: "A deep dive into debugging a write-heavy performance regression in MongoDB 4.2.1 using perf, flamegraphs, and gdb."
+cover:
+    image: "images/flamegraph_mongo-4.2.1.svg"
+    alt: "MongoDB flamegraph"
+    hidden: false
 ---
 
 I recently chased down a write-heavy performance regression that showed up when running the same workload on MongoDB 4.2.1 versus MongoDB 4.0.13. The punchline: the “slow” version spent a surprising amount of CPU time rebuilding WiredTiger row-store keys during eviction-driven reconciliation. With a targeted fix to key handling, the regression disappeared.

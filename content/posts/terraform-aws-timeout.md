@@ -4,7 +4,11 @@ date: '2025-12-26T00:00:00-07:00'
 draft: false
 categories: ["DistributedSystem", "AWS S3", "Terraform"]
 tags: ["AWS S3", "Terraform"]
-description: "Root cause analysis"
+description: "Root cause analysis of Terraform timeouts when applying AWS S3 lifecycle configuration rules."
+cover:
+    image: "images/terraform-s3/Fig1.png"
+    alt: "Terraform and AWS S3"
+    hidden: false
 ---
 
 # Background

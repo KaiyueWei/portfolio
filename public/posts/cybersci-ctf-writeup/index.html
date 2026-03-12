@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="en" dir="auto">
 
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="noindex, nofollow">
+<meta name="robots" content="index, follow">
 <title>CyberSCI CTF Write-up: Water Treatment | Kaiyue Wei</title>
 <meta name="keywords" content="Ghidra, Python, Crypto, DOS, Assembly">
 <meta name="description" content="Reverse engineering a legacy 16-bit DOS executable to bypass a custom implementation of the MD2 hash algorithm.">
 <meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/posts/cybersci-ctf-writeup/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.2211ca3164be7830024f6aad2b3a2e520843a64f8f048445c3401c1249aa051d.css" integrity="sha256-IhHKMWS&#43;eDACT2qtKzouUghDpk&#43;PBIRFw0AcEkmqBR0=" rel="preload stylesheet" as="style">
-<link rel="icon" href="http://localhost:1313/assets/favicon.png">
-<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
-<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
-<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<link rel="canonical" href="https://kaiyuewei.me/posts/cybersci-ctf-writeup/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.0951779cc5f645ba2fea2114dc737d88e794f9954feab6025f41de47ad5c2e76.css" integrity="sha256-CVF3nMX2Rbov6iEU3HN9iOeU&#43;ZVP6rYCX0HeR61cLnY=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://kaiyuewei.me/assets/favicon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://kaiyuewei.me/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://kaiyuewei.me/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://kaiyuewei.me/apple-touch-icon.png">
+<link rel="mask-icon" href="https://kaiyuewei.me/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/cybersci-ctf-writeup/">
+<link rel="alternate" hreflang="en" href="https://kaiyuewei.me/posts/cybersci-ctf-writeup/">
 <noscript>
     <style>
         #theme-toggle,
@@ -55,7 +55,79 @@
         }
 
     </style>
-</noscript>
+</noscript><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@500;600;700&display=swap" rel="stylesheet">
+<meta property="og:url" content="https://kaiyuewei.me/posts/cybersci-ctf-writeup/">
+  <meta property="og:site_name" content="Kaiyue Wei">
+  <meta property="og:title" content="CyberSCI CTF Write-up: Water Treatment">
+  <meta property="og:description" content="Reverse engineering a legacy 16-bit DOS executable to bypass a custom implementation of the MD2 hash algorithm.">
+  <meta property="og:locale" content="en-us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-11-30T00:00:00-07:00">
+    <meta property="article:modified_time" content="2025-11-30T00:00:00-07:00">
+    <meta property="article:tag" content="Ghidra">
+    <meta property="article:tag" content="Python">
+    <meta property="article:tag" content="Crypto">
+    <meta property="article:tag" content="DOS">
+    <meta property="article:tag" content="Assembly">
+    <meta property="og:image" content="https://kaiyuewei.me/images/flag1.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kaiyuewei.me/images/flag1.png">
+<meta name="twitter:title" content="CyberSCI CTF Write-up: Water Treatment">
+<meta name="twitter:description" content="Reverse engineering a legacy 16-bit DOS executable to bypass a custom implementation of the MD2 hash algorithm.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://kaiyuewei.me/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "CyberSCI CTF Write-up: Water Treatment",
+      "item": "https://kaiyuewei.me/posts/cybersci-ctf-writeup/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "CyberSCI CTF Write-up: Water Treatment",
+  "name": "CyberSCI CTF Write-up: Water Treatment",
+  "description": "Reverse engineering a legacy 16-bit DOS executable to bypass a custom implementation of the MD2 hash algorithm.",
+  "keywords": [
+    "Ghidra", "Python", "Crypto", "DOS", "Assembly"
+  ],
+  "articleBody": "I recently tackled the Water Treatment reverse engineering challenge from the CyberSCI Regionals 2025-26. The challenge involves a legacy 16-bit MS-DOS executable (wt.exe) and consists of three flags.\nI managed to solve the first flag during the hackathon and the second one afterwards. This post details how I cracked the password to get access to the menu page.\nHere is how I went from raw assembly to a successful crack using Ghidra and Python.\nInitial Reconnaissance Before diving into Ghidra, I started with some basic file analysis. I used the file command to check the file type and metadata:\n$ file wt.exe wt.exe: MS-DOS executable, MZ for MS-DOS This confirmed it was a legacy 16-bit MS-DOS executable. To run it, I installed DOSBox. When I ran the executable in DOSBox, it displayed the system name Neptune2000 (Flag 1) and then prompted: “Enter password: “.\nAfter this initial check, I loaded the binary into Ghidra and ran the auto-analysis (making sure to select the 16-bit x86 Real Mode processor). I started by looking for “low hanging fruit”—strings.\nOpening the Defined Strings window, I found a string:\n13dc:0073: \"Enter password: \" So I decided to find where this string is referenced and which function handles the comparison between the password and the user input.\nOne hurdle here is 16-bit DOS segmentation. Memory is addressed with segment:offset, where each segment is a contiguous 64 KB window. Ghidra can recover a lot, but it doesn’t always automatically connect data in one segment to code in another, so I had to manually follow these references.\nAfter searching, this is where the string was referenced inside FUN_1000_01ee():\n1000:01fc b8 73 00 MOV AX Analyzing the Logic The authentication logic in FUN_1000_01ee was relatively straightforward once the noise was filtered out. Here is the breakdown of the assembly flow:\n1000:01fc MOV AX, DAT_13dc_0073 ; Load \"Enter password\" string 1000:01ff CALL FUN_print_string ; Print it 1000:0210 CALL FUN_1000_0010 ; \u003c--- Interesting Function A 1000:0213 MOV BX, 0x10 ; Length = 16 bytes 1000:0216 MOV DX, 0x644 ; Load Target Address 1000:0219 LEA AX, [BP + -0x10] ; Load User Input Buffer 1000:021c CALL FUN_memcmp ; \u003c--- Interesting Function B The Comparison The function ending at 021c (FUN_memcmp) takes the user input and compares it against 16 bytes stored at 0x644. Naturally, I checked the memory at 0x644.\n13dc:0644 9e ?? 9Eh 13dc:0645 46 ?? 46h F 13dc:0646 24 ?? 24h $ 13dc:0647 8d ?? 8Dh 13dc:0648 91 ?? 91h 13dc:0649 fd ?? FDh 13dc:064a cb ?? CBh 13dc:064b ec ?? ECh 13dc:064c b3 ?? B3h 13dc:064d f4 ?? F4h 13dc:064e ba ?? BAh 13dc:064f 7c ?? 7Ch | 13dc:0650 aa ?? AAh 13dc:0651 e3 ?? E3h 13dc:0652 8b ?? 8Bh 13dc:0653 0d ?? 0Dh These bytes are not ASCII characters. This confirms that the program isn’t comparing our input against a plain-text password. It is hashing (or encrypting) our input first, then comparing the result.\nThis means FUN_1000_0010 (called right before the comparison) is our hashing function.\nIdentifying the Algorithm I dove into FUN_1000_0010 to understand how the input was being transformed. The decompiled C code looked messy, but two specific patterns stood out.\nThe S-Box The code heavily referenced a lookup table at address 0x43a. I inspected this memory region:\n13dc:043a 29 2E 43 C9 A2 D8 7C 01 ... A Google search for this byte prefix revealed it matches the MD2 S-table (derived from the digits of Pi). That lookup table is a strong signature for the MD2 (Message Digest 2) algorithm.\nThe Checksum Loop Further confirming this, I found a loop in the decompilation that matched the MD2 checksum update pattern (a rolling byte L over 16-byte blocks). In MD2, this update looks like C[i] = C[i] XOR S[M[i] XOR L] followed by L = C[i].\n// Ghidra Decompilation *(byte *)((*(byte *)(uVar6 + iVar4 + iStack_e) ^ bStack_a) + 0x43a); 0x43a is the S-Box. The ^ operator is the XOR. The loop structure was iterating over a 16-byte block. Conclusion: The program hashes the user input using MD2 and compares it to the hardcoded hash at 0x644.\nChallenges Encountered During the analysis, I faced a couple of interesting hurdles:\nMS-DOS Segmentation \u0026 Ghidra MS-DOS executables use segmentation for memory layouts, and Ghidra doesn’t always infer segment assumptions the way you’d expect. I had to manually follow segment:offset pairs to confirm where data was being read from.\nRecognizing the Hash Function I am not familiar with legacy hash functions, so I didn’t recognize the algorithm during the hackathon. The S-Box looked like random data at first. It wasn’t until I searched for the specific byte sequence that I realized it was MD2.\nThe Solution Since MD2 is a one-way hash function, I couldn’t just decrypt the target bytes. However, MD2 is an obsolete algorithm (from 1989), and the password was likely simple. This made it a perfect candidate for a dictionary attack.\nThis is a Python script using pycryptodome to hash passwords from the rockyou.txt wordlist and compare them to our target.\nSolver Script from Crypto.Hash import MD2 # The target hash extracted from 0x644 TARGET = bytes.fromhex(\"9E 46 24 8D 91 FD CB EC B3 F4 BA 7C AA E3 8B 0D\") def main(): print(\"[*] Brute-forcing MD2 target...\") wordlist_path = \"/usr/share/wordlists/rockyou.txt\" try: with open(wordlist_path, \"r\", encoding=\"latin-1\") as f: for count, line in enumerate(f): password = line.strip() # Calculate MD2 h = MD2.new() h.update(password.encode(\"latin-1\")) if h.digest() == TARGET: print(f\"\\n[!!!] PASSWORD FOUND: {password}\") return if count % 100000 == 0: print(f\"[*] Checked {count}...\", end=\"\\r\") except FileNotFoundError: print(\"Error: rockyou.txt not found.\") if __name__ == \"__main__\": main() Note: Why we use encoding = latin-1 instead of utf-8?\nrockyou.txt commonly contains non-UTF-8 bytes; latin-1 is often used here because it can decode any byte value without errors.\nResult I ran the script, and within a few seconds, it hit a match and allows me enter the menu:\n[*] Checked 2800000... [!!!] PASSWORD FOUND: waterworkz I fired up the executable in DOSBox, typed waterworkz, and bypassed the check!\nIt turns out that waterworkz is the password, which corresponds to the second flag. The system name (Flag 1) is Neptune2000.\nFlag 1 (System Name): Neptune2000 Flag 2 (Password): waterworkz\nReferences [1] https://blogsystem5.substack.com/p/dos-memory-models\n[2] https://handwiki.org/wiki/MD2_(hash_function)#MD2_hashes\n[3] https://datatracker.ietf.org/doc/html/rfc1319\n",
+  "wordCount" : "1034",
+  "inLanguage": "en",
+  "image":"https://kaiyuewei.me/images/flag1.png","datePublished": "2025-11-30T00:00:00-07:00",
+  "dateModified": "2025-11-30T00:00:00-07:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://kaiyuewei.me/posts/cybersci-ctf-writeup/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Kaiyue Wei",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://kaiyuewei.me/assets/favicon.png"
+    }
+  }
+}
+</script>
 </head>
 
 <body class="" id="top">
@@ -73,7 +145,7 @@
 <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="http://localhost:1313/" accesskey="h" title="Kaiyue Wei (Alt + H)">Kaiyue Wei</a>
+            <a href="https://kaiyuewei.me/" accesskey="h" title="Kaiyue Wei (Alt + H)">Kaiyue Wei</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -99,17 +171,17 @@
         </div>
         <ul id="menu">
             <li>
-                <a href="http://localhost:1313/about/" title="about">
+                <a href="https://kaiyuewei.me/about/" title="about">
                     <span>about</span>
                 </a>
             </li>
             <li>
-                <a href="http://localhost:1313/tags/" title="tags">
+                <a href="https://kaiyuewei.me/tags/" title="tags">
                     <span>tags</span>
                 </a>
             </li>
             <li>
-                <a href="http://localhost:1313/search/" title="search (Alt &#43; /)" accesskey=/>
+                <a href="https://kaiyuewei.me/search/" title="search (Alt &#43; /)" accesskey=/>
                     <span>search</span>
                 </a>
             </li>
@@ -131,6 +203,10 @@
 
 </div>
   </header> 
+<figure class="entry-cover">
+        <img loading="eager" src="https://kaiyuewei.me/images/flag1.png" alt="CyberSCI CTF challenge">
+        
+</figure>
   <div class="post-content"><p>I recently tackled the <strong>Water Treatment</strong> reverse engineering challenge from the <a href="https://github.com/CyberSCI/PastChallenges/tree/main/challenges/regionals-2025-26/re/water-treatment">CyberSCI Regionals 2025-26</a>. The challenge involves a legacy 16-bit MS-DOS executable (<code>wt.exe</code>) and consists of three flags.</p>
 <p>I managed to solve the first flag during the hackathon and the second one afterwards. This post details how I cracked the password to get access to the menu page.</p>
 <p>Here is how I went from raw assembly to a successful crack using Ghidra and Python.</p>
@@ -253,18 +329,18 @@
 
   <footer class="post-footer">
     <ul class="post-tags">
-      <li><a href="http://localhost:1313/tags/ghidra/">Ghidra</a></li>
-      <li><a href="http://localhost:1313/tags/python/">Python</a></li>
-      <li><a href="http://localhost:1313/tags/crypto/">Crypto</a></li>
-      <li><a href="http://localhost:1313/tags/dos/">DOS</a></li>
-      <li><a href="http://localhost:1313/tags/assembly/">Assembly</a></li>
+      <li><a href="https://kaiyuewei.me/tags/ghidra/">Ghidra</a></li>
+      <li><a href="https://kaiyuewei.me/tags/python/">Python</a></li>
+      <li><a href="https://kaiyuewei.me/tags/crypto/">Crypto</a></li>
+      <li><a href="https://kaiyuewei.me/tags/dos/">DOS</a></li>
+      <li><a href="https://kaiyuewei.me/tags/assembly/">Assembly</a></li>
     </ul>
   </footer>
 </article>
     </main>
     
 <footer class="footer">
-        <span>&copy; 2026 <a href="http://localhost:1313/">Kaiyue Wei</a></span> · 
+        <span>&copy; 2026 <a href="https://kaiyuewei.me/">Kaiyue Wei</a></span> · 
 
     <span>
         Powered by

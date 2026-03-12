@@ -29,8 +29,8 @@ params:
       View my <a href="projects"><u><strong>projects</strong></u></a> for some of my work.
     imageUrl: "profile.jpeg"
     imageTitle: "<itswky>"
-    imageWidth: 120
-    imageHeight: 120
+    imageWidth: 140
+    imageHeight: 140
     buttons:
       - name: posts
         url: "posts"

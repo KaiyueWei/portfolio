@@ -1,11 +1,14 @@
 ---
 title: "Data Engineering"
 date: 2026-01-01
+weight: 2
 tags: ["Data Engineering", "Docker", "Postgres", "Python"]
-summary: "A multi-part project building a local, reproducible data pipeline (ingest → Postgres → analysis)."
+summary: "A local, reproducible data pipeline from ingestion to Postgres to analysis — built with Docker, Python, and SQL."
+description: "Building a local, reproducible data pipeline from scratch using Docker, Postgres, and Python."
+repo: "https://github.com/KaiyueWei/DataEngineering"
 ---
 
-This project documents what I’m building and learning while putting together a local, reproducible data pipeline.
+This project documents what I'm building and learning while putting together a local, reproducible data pipeline.
 <!--more-->
 
 - Repo: https://github.com/KaiyueWei/DataEngineering

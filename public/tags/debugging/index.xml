@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Debugging on Kaiyue Wei</title>
-    <link>http://localhost:1313/tags/debugging/</link>
+    <link>https://kaiyuewei.me/tags/debugging/</link>
     <description>Recent content in Debugging on Kaiyue Wei</description>
     <generator>Hugo -- 0.155.2</generator>
     <language>en-us</language>
     <lastBuildDate>Tue, 16 Dec 2025 00:00:00 -0700</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/debugging/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://kaiyuewei.me/tags/debugging/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Debugging a MongoDB Performance Regression with perf, Flamegraphs, and gdb (4.2.1 vs 4.0.13)</title>
-      <link>http://localhost:1313/posts/mongodb-performance-regression/</link>
+      <title>Debugging a MongoDB Performance Regression (4.2.1 vs 4.0.13)</title>
+      <link>https://kaiyuewei.me/posts/mongodb-performance-regression/</link>
       <pubDate>Tue, 16 Dec 2025 00:00:00 -0700</pubDate>
-      <guid>http://localhost:1313/posts/mongodb-performance-regression/</guid>
+      <guid>https://kaiyuewei.me/posts/mongodb-performance-regression/</guid>
       <description>A deep dive into debugging a write-heavy performance regression in MongoDB 4.2.1 using perf, flamegraphs, and gdb.</description>
     </item>
   </channel>

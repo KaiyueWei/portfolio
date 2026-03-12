@@ -1,0 +1,332 @@
+/* ============================================
+   Custom Theme Overrides
+   ============================================ */
+
+/* --- Accent Color --- */
+:root {
+    --accent: #2563eb;
+    --accent-light: #3b82f6;
+    --accent-dark: #1d4ed8;
+}
+
+.dark {
+    --accent: #60a5fa;
+    --accent-light: #93c5fd;
+    --accent-dark: #3b82f6;
+}
+
+/* --- Typography --- */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6,
+.profile .profile_inner h1,
+.first-entry .entry-header h1,
+.post-title {
+    font-family: 'Lora', Georgia, 'Times New Roman', serif;
+}
+
+.logo a {
+    font-family: 'Lora', Georgia, serif;
+    letter-spacing: -0.02em;
+}
+
+/* --- Accent-colored Links --- */
+.post-content a,
+.profile .profile_inner a,
+.entry-content a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    transition: color 0.2s, text-decoration-color 0.2s;
+}
+
+.post-content a:hover,
+.profile .profile_inner a:hover {
+    color: var(--accent-dark);
+    text-decoration-color: var(--accent-dark);
+}
+
+.dark .post-content a:hover,
+.dark .profile .profile_inner a:hover {
+    color: var(--accent-light);
+    text-decoration-color: var(--accent-light);
+}
+
+/* --- Profile Mode Enhancements --- */
+.profile .profile_inner h1 {
+    font-size: 2.4rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.profile .profile_inner .subtitle {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    max-width: 480px;
+}
+
+.profile img {
+    width: 140px;
+    height: 140px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* --- Accent Buttons --- */
+.button {
+    background: var(--accent);
+    color: #fff !important;
+    border-radius: 24px;
+    padding: 8px 20px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+
+.button:hover {
+    background: var(--accent-dark);
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+    transform: translateY(-1px);
+}
+
+.dark .button {
+    box-shadow: 0 2px 8px rgba(96, 165, 250, 0.2);
+}
+
+.dark .button:hover {
+    background: var(--accent-light);
+    color: #1e1e1e !important;
+    box-shadow: 0 4px 16px rgba(96, 165, 250, 0.3);
+}
+
+.button:active {
+    transform: scale(0.97) translateY(0);
+}
+
+.button-inner {
+    padding: 0 4px;
+    color: inherit;
+}
+
+/* --- Social Icons Accent on Hover --- */
+.social-icons a {
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.social-icons a:hover {
+    color: var(--accent) !important;
+    transform: translateY(-2px);
+}
+
+.social-icons a svg {
+    transition: fill 0.2s ease;
+}
+
+.social-icons a:hover svg {
+    fill: var(--accent);
+}
+
+/* --- Card Hover Effects --- */
+.post-entry {
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.post-entry:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border-color: var(--accent);
+}
+
+.dark .post-entry:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.post-entry:active {
+    transform: translateY(-1px) scale(0.99);
+}
+
+/* --- First Entry (Featured Card) --- */
+.first-entry {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--gap);
+    background: var(--entry);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.first-entry:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border-color: var(--accent);
+}
+
+/* --- Entry Header Accent --- */
+.entry-header h2 {
+    transition: color 0.2s ease;
+}
+
+.post-entry:hover .entry-header h2 {
+    color: var(--accent);
+}
+
+/* --- Header Refinements --- */
+.nav {
+    border-bottom: 1px solid var(--border);
+}
+
+#menu a {
+    font-weight: 500;
+    transition: color 0.2s ease;
+    position: relative;
+}
+
+#menu a:hover {
+    color: var(--accent);
+}
+
+#menu .active {
+    border-bottom-color: var(--accent);
+    color: var(--accent);
+}
+
+/* --- Tags with Accent --- */
+.post-tags a {
+    background: var(--code-bg);
+    border-radius: 16px;
+    padding: 4px 12px;
+    font-size: 0.85rem;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.post-tags a:hover {
+    background: var(--accent);
+    color: #fff;
+}
+
+/* --- Smooth Scroll & Page Transitions --- */
+html {
+    scroll-behavior: smooth;
+}
+
+.main {
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- Cover Image Enhancements --- */
+.entry-cover img {
+    border-radius: var(--radius);
+    transition: transform 0.3s ease;
+}
+
+.post-entry:hover .entry-cover img {
+    transform: scale(1.02);
+}
+
+/* --- Code Block Polish --- */
+.post-content pre {
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+
+/* --- Selection Color --- */
+::selection {
+    background: var(--accent);
+    color: #fff;
+}
+
+/* --- Scroll Bar Accent (Webkit) --- */
+::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-dark);
+}
+
+/* --- Top Link Button Accent --- */
+.top-link:hover {
+    background: var(--accent);
+    color: #fff;
+}
+
+.top-link:hover svg {
+    fill: #fff;
+    filter: none;
+}
+
+/* --- Project Cards --- */
+.project-tech-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 10px 0;
+}
+
+.tech-badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 2px 10px;
+    border-radius: 12px;
+    background: var(--accent);
+    color: #fff;
+    opacity: 0.85;
+    letter-spacing: 0.02em;
+}
+
+.dark .tech-badge {
+    opacity: 0.9;
+}
+
+.project-repo {
+    margin-inline-start: 8px;
+}
+
+.project-repo a {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--secondary);
+    font-size: 13px;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.project-repo a:hover {
+    color: var(--accent);
+}
+
+.project-repo svg {
+    vertical-align: middle;
+}
+
+.project-card .entry-footer {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
